@@ -6,5 +6,5 @@
   "UniqueID": "desto.RegularQuality",
   "EntryDll": "RegularQuality.dll",
   "MinimumApiVersion": "2.10.0",
-  "UpdateKeys": []
+  "UpdateKeys": [ "Nexus:5090" ]
 }
