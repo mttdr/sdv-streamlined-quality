@@ -2,12 +2,13 @@
 
 You're welcome to do pull requests. :)
 
-But bear in mind that this is my first ever C# project, and as such I only have a basic understanding of its various features and quirks.
+But bear in mind that these are my first ever C# project, and as such I only have a basic understanding of its various features and quirks.
 So I would appreciate if you could add some details how your code works and what it does, so I can better understand what you did. Thanks!
 
 # Building
 
 Open the terminal in the project folder and type:
+- `cd ModName` - Select the mod to build
 - `dotnet restore` - Install dependencies
 - `msbuild` - Build the mod
 
@@ -51,7 +52,7 @@ Sources:
 Fixes for these are stored in the repo, so no need to worry about them. I hope.
 But for reference, here's what happened.
 
-## Error: "Method 'System.String.GetPathsOfAllDirectoriesAbove' not found. (MSB4184) (RegularQuality)"
+## Error: "Method 'System.String.GetPathsOfAllDirectoriesAbove' not found. (MSB4184) (ModName)"
 
 NuGet -> Microsoft.Net.Compilers -> 3.3.1
 
@@ -63,7 +64,7 @@ Source: https://stackoverflow.com/a/61585773
 
 ## Error: 'There was a mismatch between the processor architecture of the project being built "MSIL" and the processor architecture of the reference "StardewValley", "x86".'
 
-Add the following to the `RegularQuality.csproj` file:
+Add the following to the `ModName.csproj` file:
 
 ```
 <PropertyGroup>
