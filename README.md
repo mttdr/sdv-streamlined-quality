@@ -12,12 +12,12 @@ Community Center bundle requirements are updated accordingly. Tested together wi
 ## Configuration
 - `BundleIngredientQualityMultiplicator: int` = Multiply the quantity of a community center bundle ingredient by the required quality.
 
-Quality     | * | Multiplicator | = | Result
------------ | - | ------------- | - | ------
-0 (Regular) | * | 4             | = | 0 (don't change quantity)
-1 (Silver)  | * | 4             | = | 4 (add 4x the amount on top, so basically *5)
-2 (Gold)    | * | 4             | = | 8 (*9)
-3 (Iridium) | * | 4             | = | 12 (*13)
+Quality     | * | Multiplier | = | Result
+----------- | - | ---------- | - | ------
+0 (Regular) | * | 4          | = | 0 (don't change quantity)
+1 (Silver)  | * | 4          | = | 4 (add 4x the amount on top, so basically *5)
+2 (Gold)    | * | 4          | = | 8 (*9)
+3 (Iridium) | * | 4          | = | 12 (*13)
 
 ## Existing save
 
