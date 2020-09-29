@@ -4,9 +4,11 @@ Inhabitants will like items less each time you gift them that same item. Stop li
 
 ## Installation
 
-- Download on [Nexus](https://www.nexusmods.com/stardewvalley/mods/6944/)
+- Download the mod zip ->
+	[GitHub](https://github.com/desto-git/sdv-mods/releases),
+	[Nexus](https://www.nexusmods.com/stardewvalley/mods/6944/)
 - Download and install [SMAPI](https://smapi.io/)
-- Drop this mod into the Mods folder
+- Unzip the mod into Stardew Valley's Mods folder
 
 ## Configuration
 

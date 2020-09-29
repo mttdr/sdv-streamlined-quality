@@ -3,13 +3,15 @@
 Drop the quality level of all items to be regular quality. Less clutter and less profit!
 
 Community Center bundle requirements are updated accordingly.
-Tested together with [Minerva's Harder Community Center Bundles](https://www.nexusmods.com/stardewvalley/mods/3444).
+Works with [Minerva's Harder Community Center Bundles](https://www.moddrop.com/stardew-valley/mods/580704).
 
 ## Installation
 
-- Download on [Nexus](https://www.nexusmods.com/stardewvalley/mods/5090/)
+- Download the mod zip ->
+	[GitHub](https://github.com/desto-git/sdv-mods/releases),
+	[Nexus](https://www.nexusmods.com/stardewvalley/mods/5090/)
 - Download and install [SMAPI](https://smapi.io/)
-- Drop this mod into the Mods folder
+- Unzip the mod into Stardew Valley's Mods folder
 
 ## Configuration
 
