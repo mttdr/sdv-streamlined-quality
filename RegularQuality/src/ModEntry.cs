@@ -2,12 +2,13 @@
 {
 	using System.Collections.Generic;
 	using System.Linq;
+	using Common;
 	using StardewModdingAPI;
 	using StardewModdingAPI.Events;
 	using StardewValley;
 
-	/// <summary>Main method.</summary>
-	public class ModEntry : Mod, IAssetEditor
+	/// <summary>Main class.</summary>
+	internal class ModEntry : Mod, IAssetEditor
 	{
 		private const int MaxItemStackSize = 999;
 		private const int BundleIngredientFields = 3;
@@ -19,12 +20,14 @@
 		/// <param name="helper">Provides simplified APIs for writing mods.</param>
 		public override void Entry(IModHelper helper)
 		{
+			Logger.Init(this.Monitor);
+
 			this.config = this.Helper.ReadConfig<ModConfig>();
 			if (this.config.BundleIngredientQualityMultiplicator < 0)
 			{
-					this.Monitor.Log("Error in config.json: \"RarityMultiplicator\" must be at least 0.", LogLevel.Error);
-					this.Monitor.Log("Deactivating mod", LogLevel.Error);
-					return;
+				Logger.Error("Error in config.json: \"RarityMultiplicator\" must be at least 0.");
+				Logger.Error("Deactivating mod");
+				return;
 			}
 
 			helper.Events.Player.InventoryChanged += this.OnInventoryChanged;
@@ -77,9 +80,9 @@
 					int newQuantity = intQuantity + (intQuantity * intQuality * this.config.BundleIngredientQualityMultiplicator);
 					if (newQuantity > MaxItemStackSize)
 					{
-							this.Monitor.Log($"A bundle ingredient would have exceeded the maximum stack size of {MaxItemStackSize}. It has been limited to {MaxItemStackSize}.", LogLevel.Warn);
-							this.Monitor.Log($"Bundle: {key} | itemId: {itemId} | adjusted quantity = {newQuantity} (= {quantity} + {quantity} * {quality} * {this.config.BundleIngredientQualityMultiplicator}", LogLevel.Warn);
-							newQuantity = MaxItemStackSize;
+						Logger.Warn($"A bundle ingredient would have exceeded the maximum stack size of {MaxItemStackSize}. It has been limited to {MaxItemStackSize}.");
+						Logger.Warn($"Bundle: {key} | itemId: {itemId} | adjusted quantity = {newQuantity} (= {quantity} + {quantity} * {quality} * {this.config.BundleIngredientQualityMultiplicator}");
+						newQuantity = MaxItemStackSize;
 					}
 
 					bundleIngredients[indexQuantity] = newQuantity.ToString();
@@ -107,19 +110,19 @@
 			IEnumerator<Item> enumerator = e.Added.GetEnumerator();
 			while (enumerator.MoveNext())
 			{
-					// not an item with a quality property, skip
-					if (!(enumerator.Current is StardewValley.Object item)) return;
+				// not an item with a quality property, skip
+				if (!(enumerator.Current is StardewValley.Object item)) return;
 
-					// quality is already regular, nothing to do
-					// otherwise the below code would "autosort" items to the first free slot when manually organizing the inventory
-					if (item.Quality == 0) return;
+				// quality is already regular, nothing to do
+				// otherwise the below code would "autosort" items to the first free slot when manually organizing the inventory
+				if (item.Quality == 0) return;
 
-					// remove quality
-					// because this happens only AFTER the item was added to the inventory,
-					// make a best effort to stack the item with an already existing stack
-					Game1.player.removeItemFromInventory(item);
-					item.Quality = 0;
-					Game1.player.addItemToInventory(item);
+				// remove quality
+				// because this happens only AFTER the item was added to the inventory,
+				// make a best effort to stack the item with an already existing stack
+				Game1.player.removeItemFromInventory(item);
+				item.Quality = 0;
+				Game1.player.addItemToInventory(item);
 			}
 		}
 	}

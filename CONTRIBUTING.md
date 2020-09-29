@@ -2,15 +2,24 @@
 
 You're welcome to do pull requests. :)
 
-But bear in mind that these are my first ever C# project, and as such I only have a basic understanding of its various features and quirks.
+But bear in mind that these are my first ever C# projects, and as such I only have a basic understanding of its various features and quirks.
 So I would appreciate if you could add some details how your code works and what it does, so I can better understand what you did. Thanks!
 
 # Building
+
+## Using .NET Core
 
 Open the terminal in the project folder and type:
 - `cd ModName` - Select the mod to build
 - `dotnet restore` - Install dependencies
 - `msbuild` - Build the mod
+
+## MonoDevelop
+
+Apparently this setup is not compatible with MonoDevelop out-of-the-box. You could do the following:
+- Create a new project in MonoDevelop
+- Copy-paste the `manifest.json` and `src` folder into the project
+- Add NuGet packages: `Microsoft.Net.Compilers v3.3.1`, `Pathoschild.Stardew.ModBuildConfig v3.2.2`
 
 # VSCode
 
@@ -46,6 +55,12 @@ Create file `stardewvalley.targets` in your home directory:
 Sources:
 - https://github.com/Pathoschild/SMAPI/blob/develop/docs/technical/mod-package.md#configure
 - https://github.com/Pathoschild/SMAPI/blob/develop/docs/technical/mod-package.md#custom-game-path
+
+## Error: "The reference assemblies for .NETFramework,Version=v4.5 were not found."
+
+Do you use VSCode with Mono? See the VSCode section above.
+
+Source: https://github.com/OmniSharp/omnisharp-vscode/issues/4007#issuecomment-677405332
 
 # Solved errors
 
@@ -83,3 +98,8 @@ Mainly as notes to myself.
 - Add package via NuGet: `dotnet add package Microsoft.Net.Compilers -v 3.3.1`
 - Install packages in an existing repo: `dotnet restore`
 - Build a specific target: `msbuild /property:Configuration=Release`
+
+Sources:
+- https://docs.microsoft.com/en-us/dotnet/core/tools/dotnet-new
+- https://docs.microsoft.com/en-us/dotnet/core/tools/dotnet-build#examples
+- https://stackoverflow.com/a/42730946

@@ -3,7 +3,7 @@
 	<PropertyGroup>
 		<Platform>x86</Platform>
 		<TargetFramework>net45</TargetFramework>
-		<CodeAnalysisRuleSet>../common/stylecop/ruleset.xml</CodeAnalysisRuleSet>
+		<CodeAnalysisRuleSet>../Common/stylecop/ruleset.xml</CodeAnalysisRuleSet>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -19,7 +19,11 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<AdditionalFiles Include="../common/stylecop/stylecop.json" />
+		<AdditionalFiles Include="../Common/stylecop/stylecop.json" />
+	</ItemGroup>
+
+	<ItemGroup>
+    	<Compile Include="../Common/src/Logger.cs" />
 	</ItemGroup>
 
 </Project>

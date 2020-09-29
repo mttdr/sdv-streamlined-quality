@@ -2,7 +2,7 @@
   "Name": "Regular Quality",
   "Author": "desto",
   "Version": "1.0.0",
-  "Description": "Removes silver/gold/iridium quality stuff.",
+  "Description": "Drop the quality level of all items to be regular quality.",
   "UniqueID": "desto.RegularQuality",
   "EntryDll": "RegularQuality.dll",
   "MinimumApiVersion": "2.10.0",
