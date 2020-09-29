@@ -3,6 +3,7 @@
 	using System;
 	using System.Collections.Generic;
 	using Common;
+	using StardewModdingAPI;
 	using StardewModdingAPI.Events;
 	using StardewValley;
 	using StardewValley.Menus;
@@ -15,19 +16,28 @@
 		/// <param name="e">Event data.</param>
 		public static void OnMenuChanged(ref bool isInDialog, MenuChangedEventArgs e)
 		{
-			isInDialog = false;
+			isInDialog = e.NewMenu is DialogueBox newDialog && newDialog.isPortraitBox();
+		}
 
-			// just talking to people increases their friendship
-			// so update the friendship list each time a dialog is closed
-			if (e.OldMenu is DialogueBox oldDialog && oldDialog.isPortraitBox())
-			{
-				NpcHelper.StoreFriendshipLevels(Game1.player.currentLocation.characters);
-				return;
-			}
+		/// <summary>Host notices a peer.</summary>
+		/// <param name="e">Event data.</param>
+		public static void OnModMessageReceived(ModMessageReceivedEventArgs e)
+		{
+			if (e.FromModID != MultiplayerHelper.ModId) return;
+			if (e.Type != SaveGameHelper.Key) return;
 
-			if (!(e.NewMenu is DialogueBox newDialog && newDialog.isPortraitBox())) return;
+			Logger.Trace("Receiving message from peer. Type = " + e.Type);
+			SaveGameHelper.SaveState = e.ReadAs<ModData>();
+			SaveGameHelper.Apply();
+		}
 
-			isInDialog = true;
+		/// <summary>Host notices a peer.</summary>
+		/// <param name="e">Event data.</param>
+		public static void OnPeerConnected(PeerConnectedEventArgs e)
+		{
+			if (!e.Peer.HasSmapi) return;
+
+			MultiplayerHelper.SendMessage(SaveGameHelper.SaveState, SaveGameHelper.Key);
 		}
 
 		/// <summary>Player changes location.</summary>
@@ -35,7 +45,6 @@
 		/// <param name="e">Event data.</param>
 		public static void OnInventoryChanged(Action<Item> onItemRemoved, InventoryChangedEventArgs e)
 		{
-			// only update the inventory of the target player
 			if (!e.IsLocalPlayer) return;
 
 			IEnumerator<Item> removed = e.Removed.GetEnumerator();
@@ -57,17 +66,16 @@
 		/// <summary>Player changes location.</summary>
 		public static void OnWarped()
 		{
-			NpcHelper.StoreFriendshipLevels(Game1.player.currentLocation.characters);
+			NpcHelper.StoreAmountOfGiftsReceived(Game1.player.currentLocation.characters);
 		}
 
 		/// <summary>Day ends (before save).</summary>
 		/// <param name="config">Mod configuration object.</param>
-		/// <param name="data">Save game data.</param>
-		public static void OnDayEnding(ModConfig config, ModData data)
+		public static void OnDayEnding(ModConfig config)
 		{
 			// apply gift taste changes at the end of day (and not immediately after gifting)
 			// this way the social tab will show the reaction you actually got for that day
-			SaveGameHelper.Apply(data);
+			SaveGameHelper.Apply();
 
 			if (config.ResetEveryXDays == 0) return;
 
@@ -76,27 +84,26 @@
 			{
 				Logger.Trace("Resetting gift tastes");
 				NpcHelper.ResetGiftTastes();
-				SaveGameHelper.ResetGiftTastes(data);
+				SaveGameHelper.ResetGiftTastes();
 			}
 		}
 
 		/// <summary>Just before a game is being saved.</summary>
-		/// <param name="data">Save game data.</param>
-		/// <param name="writeSaveData">Callback for writing save data.</param>
-		public static void OnSaving(ModData data, Action<string, ModData> writeSaveData)
+		public static void OnSaving()
 		{
-			writeSaveData(SaveGameHelper.Key, data);
+			if (!Context.IsMainPlayer) return;
+			SaveGameHelper.WriteToFile();
 		}
 
 		/// <summary>After save game got loaded (or new one is created).</summary>
-		/// <param name="data">Save game data.</param>
-		/// <param name="readSaveData">Callback for getting save data.</param>
-		public static void OnSaveLoaded(ref ModData data, Func<string, ModData> readSaveData)
+		public static void OnSaveLoaded()
 		{
 			NpcHelper.StoreDefaultGiftTastes();
 
-			data = readSaveData(SaveGameHelper.Key) ?? new ModData();
-			SaveGameHelper.Apply(data);
+			if (!Context.IsMainPlayer) return;
+
+			SaveGameHelper.LoadFromFileOrInitialize();
+			SaveGameHelper.Apply();
 		}
 
 		/// <summary>NPCs got loaded.</summary>
@@ -104,7 +111,7 @@
 		public static void OnNpcListChanged(NpcListChangedEventArgs e)
 		{
 			if (!e.IsCurrentLocation) return;
-			NpcHelper.StoreFriendshipLevels(e.Added);
+			NpcHelper.StoreAmountOfGiftsReceived(e.Added);
 		}
 	}
 }

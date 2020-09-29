@@ -22,4 +22,6 @@ If set to `0`, gift taste will never be reset. Defaults to `112` (= yearly)
 
 ## Multiplayer
 
-This mod has **not** been tested in multiplayer. It _should_ probably work, but I can't guarantee it.
+The gift taste decline is shared across all players.
+So if you gift an item to an NPC and then your friend gifts the same item to that same NPC,
+your friend will already get the subpar reaction.

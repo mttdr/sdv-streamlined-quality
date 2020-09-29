@@ -11,7 +11,6 @@
 	internal class ModEntry : Mod
 	{
 		private ModConfig config;
-		private ModData saveData;
 		private bool isInDialog = false;
 
 		/// <summary>The mod entry point, called after the mod is first loaded.</summary>
@@ -19,6 +18,8 @@
 		public override void Entry(IModHelper helper)
 		{
 			Logger.Init(this.Monitor);
+			MultiplayerHelper.Init(this.Helper.Multiplayer);
+			SaveGameHelper.Init(this.Helper.Data);
 
 			this.config = this.Helper.ReadConfig<ModConfig>();
 			if (this.config.ResetEveryXDays < 0)
@@ -28,10 +29,16 @@
 				return;
 			}
 
-			SaveGameHelper.AddResetCommand(helper, () => this.saveData);
+			SaveGameHelper.AddResetCommand(helper);
 
 			helper.Events.Display.MenuChanged += (object sender, MenuChangedEventArgs e) =>
 				EventHandler.OnMenuChanged(ref this.isInDialog, e);
+
+			helper.Events.Multiplayer.ModMessageReceived += (object sender, ModMessageReceivedEventArgs e) =>
+				EventHandler.OnModMessageReceived(e);
+
+			helper.Events.Multiplayer.PeerConnected += (object sender, PeerConnectedEventArgs e) =>
+				EventHandler.OnPeerConnected(e);
 
 			helper.Events.Player.InventoryChanged += (object sender, InventoryChangedEventArgs e) =>
 				EventHandler.OnInventoryChanged(this.OnItemRemoved, e);
@@ -40,13 +47,13 @@
 				EventHandler.OnWarped();
 
 			helper.Events.GameLoop.DayEnding += (object sender, DayEndingEventArgs e) =>
-				EventHandler.OnDayEnding(this.config, this.saveData);
+				EventHandler.OnDayEnding(this.config);
 
 			helper.Events.GameLoop.Saving += (object sender, SavingEventArgs e) =>
-				EventHandler.OnSaving(this.saveData, this.Helper.Data.WriteSaveData<ModData>);
+				EventHandler.OnSaving();
 
 			helper.Events.GameLoop.SaveLoaded += (object sender, SaveLoadedEventArgs e) =>
-				EventHandler.OnSaveLoaded(ref this.saveData, this.Helper.Data.ReadSaveData<ModData>);
+				EventHandler.OnSaveLoaded();
 
 			helper.Events.World.NpcListChanged += (object sender, NpcListChangedEventArgs e) =>
 				EventHandler.OnNpcListChanged(e);
@@ -64,7 +71,7 @@
 			while (enumerator.MoveNext())
 			{
 				NPC npc = enumerator.Current;
-				if (NpcHelper.AcceptsGifts(npc) && NpcHelper.HasFriendshipLevelChanged(npc))
+				if (NpcHelper.AcceptsGifts(npc) && NpcHelper.HasReceivedGift(npc, item))
 				{
 					recipient = npc;
 					break;
@@ -78,7 +85,7 @@
 
 			int newGiftTaste = NpcHelper.GetReduceGiftTaste(recipient, item);
 			string itemId = plainItem.ParentSheetIndex.ToString();
-			SaveGameHelper.SetGiftTaste(this.saveData, recipient.Name, itemId, newGiftTaste);
+			SaveGameHelper.SetGiftTaste(recipient.Name, itemId, newGiftTaste);
 		}
 	}
 }

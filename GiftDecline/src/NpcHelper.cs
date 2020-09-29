@@ -13,7 +13,7 @@
 		private const char XnbGiftSeparator = ' ';
 
 		private static readonly Dictionary<string, string> DefaultTastes = new Dictionary<string, string>();
-		private static readonly Dictionary<string, int> FriendshipMap = new Dictionary<string, int>();
+		private static readonly Dictionary<string, Dictionary<int, int>> GiftsReceived = new Dictionary<string, Dictionary<int, int>>();
 
 		/// <summary>Get the next lower gift taste level for an item from an NPC.</summary>
 		/// <param name="npc">NPC for getting their current gift taste.</param>
@@ -119,24 +119,52 @@
 
 		/// <summary>Check wether the friendship level differs from the last known state.</summary>
 		/// <param name="npc">NPC whose friendship to store.</param>
+		/// <param name="item">Item to maybe have received.</param>
 		/// <returns>Wether or not the friendship level differs.</returns>
-		public static bool HasFriendshipLevelChanged(NPC npc)
+		public static bool HasReceivedGift(NPC npc, Item item)
 		{
-			int lastFriendship = FriendshipMap[npc.Name];
-			int currentFriendship = Game1.player.getFriendshipLevelForNPC(npc.Name);
-			return lastFriendship != currentFriendship;
+			var giftedItems = Game1.player.giftedItems;
+			if (!giftedItems.ContainsKey(npc.Name)) return false;
+
+			var giftedToNpc = giftedItems[npc.Name];
+			if (!giftedToNpc.ContainsKey(item.ParentSheetIndex)) return false;
+
+			if (!GiftsReceived.ContainsKey(npc.Name)) return true;
+			if (!GiftsReceived[npc.Name].ContainsKey(item.ParentSheetIndex)) return true;
+
+			int lastAmount = GiftsReceived[npc.Name][item.ParentSheetIndex];
+			int currentAmount = giftedToNpc[item.ParentSheetIndex];
+			return lastAmount != currentAmount;
 		}
 
 		/// <summary>Get and store the current friendship level of an NPC.</summary>
 		/// <param name="npcCollection">NPCs whose friendship to store.</param>
-		public static void StoreFriendshipLevels(IEnumerable<NPC> npcCollection)
+		public static void StoreAmountOfGiftsReceived(IEnumerable<NPC> npcCollection)
 		{
 			IEnumerator<NPC> characters = npcCollection.GetEnumerator();
 			while (characters.MoveNext())
 			{
 				NPC npc = characters.Current;
-				FriendshipMap[npc.Name] = Game1.player.getFriendshipLevelForNPC(npc.Name);
+
+				var giftedItems = Game1.player.giftedItems;
+				if (!giftedItems.ContainsKey(npc.Name)) continue;
+
+				var giftedToNpc = giftedItems[npc.Name];
+				foreach (int itemId in giftedToNpc.Keys)
+				{
+					AddReceivedGift(npc.Name, itemId, giftedToNpc[itemId]);
+				}
 			}
+		}
+
+		private static void AddReceivedGift(string npcName, int itemId, int amount)
+		{
+			if (!GiftsReceived.ContainsKey(npcName))
+			{
+				GiftsReceived.Add(npcName, new Dictionary<int, int>());
+			}
+
+			GiftsReceived[npcName][itemId] = amount;
 		}
 	}
 }
