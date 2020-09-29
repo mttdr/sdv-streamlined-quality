@@ -77,14 +77,11 @@
 		/// <returns>Adjusted reward value.</returns>
 		public static int GetAdjustedReward(int originalReward, ModConfig config)
 		{
-			Logger.Debug("player profit margin: " + Game1.player.difficultyModifier);
 			float rewardMultiplier = config.UseProfitMargin
 				? Game1.player.difficultyModifier
 				: config.CustomProfitMargin;
 
 			int adjustReward = (int)(originalReward * rewardMultiplier);
-
-			Logger.Debug("Reward: " + originalReward + " -> " + adjustReward);
 
 			return adjustReward;
 		}
