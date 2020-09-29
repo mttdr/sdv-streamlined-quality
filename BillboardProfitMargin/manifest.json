@@ -1,0 +1,14 @@
+﻿{
+	"Name": "Billboard Profit Margin",
+	"Author": "desto",
+	"Version": "1.0.0",
+	"Description": "Profit margin for daily quest rewards.",
+	"UniqueID": "desto.BillboardProfitMargin",
+	"EntryDll": "BillboardProfitMargin.dll",
+	"MinimumApiVersion": "2.10.0",
+	"UpdateKeys": [],
+	"Dependencies": [
+		{"UniqueID": "Cherry.ProfitMargins", "IsRequired": false},
+		{"UniqueID": "Pokeytax.HelpWantedQuestFixes", "IsRequired": false}
+	]
+}
