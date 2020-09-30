@@ -56,12 +56,6 @@
 		{
 			if (!e.IsLocalPlayer) return;
 
-			IEnumerator<Item> removed = e.Removed.GetEnumerator();
-			while (removed.MoveNext())
-			{
-				onItemRemoved(removed.Current);
-			}
-
 			IEnumerator<ItemStackSizeChange> quantityChanged = e.QuantityChanged.GetEnumerator();
 			while (quantityChanged.MoveNext())
 			{

@@ -6,6 +6,7 @@
 	using StardewModdingAPI;
 	using StardewModdingAPI.Events;
 	using StardewValley;
+	using StardewValley.Quests;
 
 	/// <summary>Main class.</summary>
 	internal class ModEntry : Mod
@@ -71,6 +72,14 @@
 					SaveGameHelper.HandleReceivedGift(npc, item);
 					return;
 				}
+			}
+
+			if (Game1.questOfTheDay is ItemDeliveryQuest quest &&
+				quest.deliveryItem.Value.ParentSheetIndex == item.ParentSheetIndex &&
+				Game1.questOfTheDay.hasReward())
+			{
+				Logger.Trace("Handed over quest item");
+				return;
 			}
 
 			throw new Exception("It appears a gift has been given to someone, but I can't determine to whom :(");
