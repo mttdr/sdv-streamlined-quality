@@ -39,64 +39,78 @@
 			}
 		}
 
-		/// <summary>Set the taste level for an item of an NPC.</summary>
+		/// <summary>Set the taste level for an item of an NPC. Is capped at a configurable minimum.</summary>
 		/// <param name="npc">NPC of whom to overwrite the taste level.</param>
 		/// <param name="item">Item affected by the change.</param>
-		/// <param name="newGiftTaste">New taste level.</param>
-		public static void SetGiftTasteLevel(NPC npc, Item item, int newGiftTaste)
+		/// <param name="desiredGiftTaste">Taste level to set it to.</param>
+		/// <returns>The actual value it got set to.</returns>
+		public static int SetGiftTasteLevel(NPC npc, Item item, int desiredGiftTaste)
 		{
-			int oldGiftTaste = npc.getGiftTasteForThisItem(item);
-			if (newGiftTaste == oldGiftTaste) return;
+			int currentGiftTaste = npc.getGiftTasteForThisItem(item);
+			if (desiredGiftTaste == currentGiftTaste) return currentGiftTaste;
 
 			int itemId = item.ParentSheetIndex;
+			int originalGiftTaste;
 
 			if (!HasGiftTasteBeenOverwritten(npc.Name, itemId))
 			{
-				StoreDefaultGiftTasteForItem(npc.Name, itemId, oldGiftTaste);
+				originalGiftTaste = currentGiftTaste;
+				StoreDefaultGiftTasteForItem(npc.Name, itemId, currentGiftTaste);
+			}
+			else
+			{
+				originalGiftTaste = DefaultTastesMap[npc.Name][itemId];
 			}
 
 			int reduction = GetCurrentReduction(npc, item);
 			int maxReduction = ConfigHelper.Config.MaxReduction;
 			if (reduction >= maxReduction)
 			{
-				string logDontAdjust = $"Not adjusting gift taste for {npc.Name}, item #{itemId} ({item.Name}) : ";
-				logDontAdjust += "MaxReduction (" + maxReduction + ") has been reached. (" + reduction + ")";
+				string logDontAdjust = $"Not adjusting gift taste for {npc.Name}, item {GetItemString(item)} : ";
+				logDontAdjust += "MaxReduction (" + maxReduction + ") has been reached.";
+				logDontAdjust += " (" + originalGiftTaste + " -> " + currentGiftTaste + ")";
 				Logger.Trace(logDontAdjust);
-				return;
+				return currentGiftTaste;
 			}
 
-			int clampedNewGiftTaste = GetClampedGiftTasteOverwrite(oldGiftTaste, newGiftTaste);
-			if (clampedNewGiftTaste != newGiftTaste)
+			// In case a previous configuration allowed for the taste level to drop further than is allowed now
+			// Limit it to the current cap
+			int clampedNewGiftTaste = GetClampedGiftTasteOverwrite(originalGiftTaste, desiredGiftTaste);
+			if (clampedNewGiftTaste != desiredGiftTaste)
 			{
-				string logClamped = "Limiting intended gift taste overwrite from ";
-				logClamped += GetGiftTasteString(newGiftTaste) + " to " + GetGiftTasteString(clampedNewGiftTaste);
+				string logClamped = $"Limiting gift taste adjustment for {npc.Name}, item {GetItemString(item)} from ";
+				logClamped += GetGiftTasteString(desiredGiftTaste) + " to " + GetGiftTasteString(clampedNewGiftTaste);
 				Logger.Trace(logClamped);
-				newGiftTaste = clampedNewGiftTaste;
+				desiredGiftTaste = clampedNewGiftTaste;
 			}
+
+			if (clampedNewGiftTaste == currentGiftTaste) return currentGiftTaste;
 
 			string logDoAdjust = $"Adjusting gift taste for {npc.Name}, item #{itemId} ({item.Name}) : ";
-			logDoAdjust += GetGiftTasteString(oldGiftTaste) + " -> " + GetGiftTasteString(newGiftTaste);
+			logDoAdjust += GetGiftTasteString(currentGiftTaste) + " -> " + GetGiftTasteString(desiredGiftTaste);
 			Logger.Trace(logDoAdjust);
 
 			// Original index refers to the reaction text. The corresponding items for this come afterwards.
-			++oldGiftTaste;
-			++newGiftTaste;
+			int currentGiftTasteIndex = currentGiftTaste + 1;
+			int desiredGiftTasteIndex = desiredGiftTaste + 1;
 
 			string itemIdString = itemId.ToString();
 			string[] giftTasteData = Game1.NPCGiftTastes[npc.Name].Split(XnbFieldSeparator);
 
-			List<string> oldGiftTasteData = giftTasteData[oldGiftTaste].Split(XnbGiftSeparator).ToList();
+			List<string> oldGiftTasteData = giftTasteData[currentGiftTasteIndex].Split(XnbGiftSeparator).ToList();
 			if (oldGiftTasteData.Contains(itemIdString))
 			{
 				oldGiftTasteData.RemoveAt(oldGiftTasteData.IndexOf(itemIdString));
-				giftTasteData[oldGiftTaste] = string.Join(XnbGiftSeparator.ToString(), oldGiftTasteData);
+				giftTasteData[currentGiftTasteIndex] = string.Join(XnbGiftSeparator.ToString(), oldGiftTasteData);
 			}
 
-			List<string> newGiftTasteData = giftTasteData[newGiftTaste].Split(XnbGiftSeparator).ToList();
+			List<string> newGiftTasteData = giftTasteData[desiredGiftTasteIndex].Split(XnbGiftSeparator).ToList();
 			newGiftTasteData.Add(itemIdString);
-			giftTasteData[newGiftTaste] = string.Join(XnbGiftSeparator.ToString(), newGiftTasteData);
+			giftTasteData[desiredGiftTasteIndex] = string.Join(XnbGiftSeparator.ToString(), newGiftTasteData);
 
 			Game1.NPCGiftTastes[npc.Name] = string.Join(XnbFieldSeparator.ToString(), giftTasteData);
+
+			return desiredGiftTaste;
 		}
 
 		/// <summary>Check if a given NPC can receive gifts.</summary>
@@ -149,7 +163,14 @@
 
 			int lastAmount = GiftsReceived[npc.Name][item.ParentSheetIndex];
 			int currentAmount = giftedToNpc[item.ParentSheetIndex];
-			return lastAmount != currentAmount;
+
+			bool didReceiveGift = lastAmount != currentAmount;
+			if (didReceiveGift)
+			{
+				StoreReceivedGift(npc.Name, item.ParentSheetIndex, currentAmount);
+			}
+
+			return didReceiveGift;
 		}
 
 		/// <summary>Get and store the current friendship level of a list of NPCs.</summary>
@@ -172,6 +193,14 @@
 			}
 		}
 
+		/// <summary>Get a readable version of an item.</summary>
+		/// <param name="item">Item to stringify.</param>
+		/// <returns>Stringified item.</returns>
+		public static string GetItemString(Item item)
+		{
+			return "#" + item.ParentSheetIndex + " (" + item.Name + ")";
+		}
+
 		private static void StoreReceivedGift(string npcName, int itemId, int amount)
 		{
 			if (!GiftsReceived.ContainsKey(npcName))
@@ -184,6 +213,7 @@
 
 		private static void StoreDefaultGiftTasteForItem(string npcName, int itemId, int giftTaste)
 		{
+			Logger.Trace("Storing default gift taste: " + npcName + " -> #" + itemId + " = " + giftTaste);
 			if (!DefaultTastesMap.ContainsKey(npcName))
 			{
 				DefaultTastesMap.Add(npcName, new Dictionary<int, int>());

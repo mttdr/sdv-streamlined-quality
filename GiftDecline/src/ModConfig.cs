@@ -11,5 +11,8 @@
 
 		/// <summary>Limit how much the taste for a gift can drop.</summary>
 		public int MaxReduction { get; set; } = 4;
+
+		/// <summary>Reduce the gift taste only after the item has been gifted to the NPC this many times.</summary>
+		public int ReduceAfterXGifts { get; set; } = 1;
 	}
 }

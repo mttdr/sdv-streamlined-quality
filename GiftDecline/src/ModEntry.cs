@@ -41,6 +41,9 @@
 			helper.Events.GameLoop.DayEnding += (object sender, DayEndingEventArgs e) =>
 				EventHandler.OnDayEnding();
 
+			helper.Events.GameLoop.ReturnedToTitle += (object sender, ReturnedToTitleEventArgs e) =>
+				EventHandler.OnReturnedToTitle();
+
 			helper.Events.GameLoop.Saving += (object sender, SavingEventArgs e) =>
 				EventHandler.OnSaving();
 
@@ -58,7 +61,6 @@
 			if (!(plainItem is StardewValley.Object item)) return;
 			if (!item.canBeGivenAsGift()) return; // e.g. Tools or any placable object
 
-			NPC recipient = null;
 			IEnumerator<NPC> enumerator = Game1.player.currentLocation.characters.GetEnumerator();
 			while (enumerator.MoveNext())
 			{
@@ -66,19 +68,12 @@
 				if (NpcHelper.AcceptsGifts(npc) && NpcHelper.HasJustReceivedGift(npc, item))
 				{
 					Logger.Trace(npc.Name + " received gift #" + item.ParentSheetIndex + " (" + item.Name + ")");
-					recipient = npc;
-					break;
+					SaveGameHelper.HandleReceivedGift(npc, item);
+					return;
 				}
 			}
 
-			if (recipient == null)
-			{
-				throw new Exception("It appears a gift has been given to someone, but I can't determine to whom :(");
-			}
-
-			int newGiftTaste = NpcHelper.GetReduceGiftTaste(recipient, item);
-			string itemId = plainItem.ParentSheetIndex.ToString();
-			SaveGameHelper.SetGiftTaste(recipient.Name, itemId, newGiftTaste);
+			throw new Exception("It appears a gift has been given to someone, but I can't determine to whom :(");
 		}
 	}
 }

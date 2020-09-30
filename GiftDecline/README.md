@@ -17,6 +17,7 @@ starting from the very first day (Day 1, Year 1).
 If set to `0`, gift taste will never be reset. Defaults to `112` (= yearly)
 - `MaximumDeviation: int` = Limit how much the taste for a gift can drop.
 E.g. if set to `2`, a loved gift can not fall below a neutral reaction.
+- `ReduceAfterXGifts: int` = Reduce the gift taste only after the item has been gifted to the NPC this many times.
 
 ## CLI
 
@@ -27,3 +28,5 @@ E.g. if set to `2`, a loved gift can not fall below a neutral reaction.
 The gift taste decline is shared across all players.
 So if you gift an item to an NPC and then your friend gifts the same item to that same NPC,
 your friend will already get the subpar reaction.
+
+You could counteract that by setting `ReduceAfterXGifts` to the number of players.

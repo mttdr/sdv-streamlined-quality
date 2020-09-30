@@ -24,11 +24,19 @@
 		public static void OnModMessageReceived(ModMessageReceivedEventArgs e)
 		{
 			if (e.FromModID != MultiplayerHelper.ModId) return;
-			if (e.Type != SaveGameHelper.Key) return;
 
 			Logger.Trace("Receiving message from peer. Type = " + e.Type);
-			SaveGameHelper.SaveState = e.ReadAs<ModData>();
-			SaveGameHelper.Apply();
+
+			if (e.Type == ConfigHelper.Key)
+			{
+				// Use configuration of the host to prevent potential de-syncs
+				ConfigHelper.Config = e.ReadAs<ModConfig>();
+			}
+			else if (e.Type == SaveGameHelper.Key)
+			{
+				SaveGameHelper.SaveState = e.ReadAs<ModData>();
+				SaveGameHelper.Apply();
+			}
 		}
 
 		/// <summary>Host notices a peer.</summary>
@@ -37,7 +45,8 @@
 		{
 			if (!e.Peer.HasSmapi) return;
 
-			MultiplayerHelper.SendMessage(SaveGameHelper.SaveState, SaveGameHelper.Key);
+			ConfigHelper.SyncWithPeers();
+			SaveGameHelper.SyncWithPeers();
 		}
 
 		/// <summary>Player changes location.</summary>
@@ -84,13 +93,18 @@
 			int nextDay = Game1.Date.TotalDays + 1;
 			if (nextDay % ConfigHelper.Config.ResetEveryXDays == 0)
 			{
-				Logger.Trace("Resetting gift tastes");
-				NpcHelper.ResetGiftTastes();
-				SaveGameHelper.ResetGiftTastes();
+				SaveGameHelper.ResetSaveState();
 				return;
 			}
 
 			SaveGameHelper.Apply();
+		}
+
+		/// <summary>Quit game back to main menu screen.</summary>
+		public static void OnReturnedToTitle()
+		{
+			SaveGameHelper.ResetSaveState();
+			ConfigHelper.RestoreLocalConfig();
 		}
 
 		/// <summary>Just before a game is being saved.</summary>
