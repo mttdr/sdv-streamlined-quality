@@ -10,7 +10,6 @@
 	/// <summary>Main class.</summary>
 	internal class ModEntry : Mod
 	{
-		private ModConfig config;
 		private bool isInDialog = false;
 
 		/// <summary>The mod entry point, called after the mod is first loaded.</summary>
@@ -20,14 +19,7 @@
 			Logger.Init(this.Monitor);
 			MultiplayerHelper.Init(this.Helper.Multiplayer);
 			SaveGameHelper.Init(this.Helper.Data);
-
-			this.config = this.Helper.ReadConfig<ModConfig>();
-			if (this.config.ResetEveryXDays < 0)
-			{
-				Logger.Error("Error in config.json: \"ResetEveryXDays\" must be at least 0.");
-				Logger.Error("Deactivating mod");
-				return;
-			}
+			ConfigHelper.Init(this.Helper);
 
 			SaveGameHelper.AddResetCommand(helper);
 
@@ -47,7 +39,7 @@
 				EventHandler.OnWarped();
 
 			helper.Events.GameLoop.DayEnding += (object sender, DayEndingEventArgs e) =>
-				EventHandler.OnDayEnding(this.config);
+				EventHandler.OnDayEnding();
 
 			helper.Events.GameLoop.Saving += (object sender, SavingEventArgs e) =>
 				EventHandler.OnSaving();
@@ -71,8 +63,9 @@
 			while (enumerator.MoveNext())
 			{
 				NPC npc = enumerator.Current;
-				if (NpcHelper.AcceptsGifts(npc) && NpcHelper.HasReceivedGift(npc, item))
+				if (NpcHelper.AcceptsGifts(npc) && NpcHelper.HasJustReceivedGift(npc, item))
 				{
+					Logger.Trace(npc.Name + " received gift #" + item.ParentSheetIndex + " (" + item.Name + ")");
 					recipient = npc;
 					break;
 				}

@@ -8,5 +8,8 @@
 		/// If 0, gift taste won't ever automatically reset.
 		/// </summary>
 		public int ResetEveryXDays { get; set; } = 112; // 28 * 4 = 1 year
+
+		/// <summary>Limit how much the taste for a gift can drop.</summary>
+		public int MaxReduction { get; set; } = 4;
 	}
 }

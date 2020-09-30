@@ -70,22 +70,27 @@
 		}
 
 		/// <summary>Day ends (before save).</summary>
-		/// <param name="config">Mod configuration object.</param>
-		public static void OnDayEnding(ModConfig config)
+		public static void OnDayEnding()
 		{
-			// apply gift taste changes at the end of day (and not immediately after gifting)
-			// this way the social tab will show the reaction you actually got for that day
-			SaveGameHelper.Apply();
-
-			if (config.ResetEveryXDays == 0) return;
+			// don't ever reset, just apply the gift taste
+			if (ConfigHelper.Config.ResetEveryXDays == 0)
+			{
+				// apply gift taste changes at the end of day (and not immediately after gifting)
+				// this way the social tab will show the reaction you actually got for that day
+				SaveGameHelper.Apply();
+				return;
+			}
 
 			int nextDay = Game1.Date.TotalDays + 1;
-			if (nextDay % config.ResetEveryXDays == 0)
+			if (nextDay % ConfigHelper.Config.ResetEveryXDays == 0)
 			{
 				Logger.Trace("Resetting gift tastes");
 				NpcHelper.ResetGiftTastes();
 				SaveGameHelper.ResetGiftTastes();
+				return;
 			}
+
+			SaveGameHelper.Apply();
 		}
 
 		/// <summary>Just before a game is being saved.</summary>

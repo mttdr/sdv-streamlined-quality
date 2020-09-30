@@ -27,7 +27,7 @@
 		{
 			if (!Context.IsMultiplayer) return;
 
-			Logger.Debug("Sending message to peers. Type = " + type);
+			Logger.Trace("Sending message to peers. Type = " + type);
 			helper.SendMessage(message, type, new[] { ModId });
 		}
 	}
