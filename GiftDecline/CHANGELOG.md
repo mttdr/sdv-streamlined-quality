@@ -1,4 +1,8 @@
-﻿## 1.1.0
+﻿## 1.1.1
+
+- Remove some debugging logs
+
+## 1.1.0
 
 - Feature: [#2] Add option to cap gift taste reduction
 - Feature: [#3] Add option to delay gift taste reduction
