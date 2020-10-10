@@ -11,8 +11,6 @@
 	internal class ModEntry : Mod
 	{
 		private ModConfig config;
-		private bool hasRewardBeenAdjusted = false;
-		private bool isItemDeliveryQuest = false;
 
 		/// <summary>The mod entry point, called after the mod is first loaded.</summary>
 		/// <param name="helper">Provides simplified APIs for writing mods.</param>
@@ -28,8 +26,6 @@
 				return;
 			}
 
-			helper.Events.GameLoop.ReturnedToTitle += (object sender, ReturnedToTitleEventArgs e) => this.ResetState();
-			helper.Events.GameLoop.DayEnding += (object sender, DayEndingEventArgs e) => this.ResetState();
 			helper.Events.GameLoop.DayStarted += this.OnDayStarted;
 			helper.Events.Display.MenuChanged += this.OnMenuChanged;
 		}
@@ -38,29 +34,21 @@
 		// once the quest is completed, it needs to be updated again along with the reward
 		private void UpdateItemDeliveryQuest(ItemDeliveryQuest quest)
 		{
-			this.isItemDeliveryQuest = true;
-
 			// item delivery quests don't have a reward property
-			// instead, the reward is calculated from the item being requested
+			// instead, the reward is calculated from the item being requested once the quest has been completed
 			// this assumes that the reward is always three times the item value
 			int originalReward = quest.deliveryItem.Value.Price * 3;
 			int adjustedReward = QuestHelper.GetAdjustedReward(originalReward, this.config);
 
+			if (QuestHelper.GetReward(quest) == adjustedReward) return;
+
 			// replace values in the quest text
 			QuestHelper.UpdateDescription(quest, originalReward, adjustedReward);
 
-			// once the quest is completed, the reward is set
-			if (QuestHelper.GetReward(quest) == 0) return;
+			// true once the reward can be collected from the quest log
+			if (!quest.hasReward()) return;
 
 			QuestHelper.SetReward(quest, adjustedReward);
-
-			this.hasRewardBeenAdjusted = true;
-		}
-
-		private void ResetState()
-		{
-			this.hasRewardBeenAdjusted = false;
-			this.isItemDeliveryQuest = false;
 		}
 
 		private void OnDayStarted(object sender, DayStartedEventArgs e)
@@ -76,16 +64,16 @@
 			}
 
 			QuestHelper.AdjustRewardImmediately(dailyQuest, this.config);
-			this.hasRewardBeenAdjusted = true;
 		}
 
 		private void OnMenuChanged(object sender, MenuChangedEventArgs e)
 		{
-			if (this.hasRewardBeenAdjusted) return;
-
-			if (this.isItemDeliveryQuest && e.NewMenu is QuestLog)
+			if (e.NewMenu is QuestLog)
 			{
-				this.UpdateItemDeliveryQuest((ItemDeliveryQuest)Game1.questOfTheDay);
+				foreach (ItemDeliveryQuest quest in QuestLogHelper.GetDailyItemDeliveryQuests())
+				{
+					this.UpdateItemDeliveryQuest(quest);
+				}
 			}
 		}
 	}

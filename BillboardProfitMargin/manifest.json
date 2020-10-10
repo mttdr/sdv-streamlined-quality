@@ -1,7 +1,7 @@
 ﻿{
 	"Name": "Billboard Profit Margin",
 	"Author": "desto",
-	"Version": "1.0.2",
+	"Version": "1.0.3",
 	"Description": "Profit margin for daily quest rewards.",
 	"UniqueID": "desto.BillboardProfitMargin",
 	"EntryDll": "BillboardProfitMargin.dll",

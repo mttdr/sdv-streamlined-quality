@@ -1,7 +1,7 @@
 ﻿## 1.1.1
 
-- Remove some debugging logs
-- Remove error log when handing in a billboard quest item a day after accepting it
+- Fix: Remove some debugging logs
+- Fix: Remove error log when handing in a billboard quest item a day after accepting it
 
 ## 1.1.0
 
