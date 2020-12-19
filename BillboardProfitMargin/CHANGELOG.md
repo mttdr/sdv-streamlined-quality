@@ -1,4 +1,9 @@
-﻿## 1.0.3
+﻿## 1.0.4
+
+- Fix: Improve Quest Framework compatibility. QF quests are now properly generated, but not adjusted at the moment.
+
+
+## 1.0.3
 
 - Fix: Adjust item delivery quests even when they are not completed on the same day
 
