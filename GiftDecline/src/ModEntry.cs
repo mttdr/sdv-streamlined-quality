@@ -83,7 +83,8 @@
 				}
 			}
 
-			throw new Exception("It appears a gift has been given to someone, but I can't determine to whom :(");
+			Logger.Trace("It appears a gift has been given to someone, but I can't determine to whom :(");
+			Logger.Trace("Maybe it was a non-daily quest item? (" + item.Name + ")");
 		}
 	}
 }
