@@ -1,4 +1,9 @@
-﻿## 1.1.2
+﻿## 1.1.3
+
+- Fix: NullReferenceException when either an NPC or item was not found in the game (in case a mod got removed)
+- Fix: Error when starting a new game
+
+## 1.1.2
 
 - Fix: Recompile for compatibility with Stardew Valley 1.5
 - Fix: Use Log.Trace if the target of a gift cannot be determined instead of throwing a full error
