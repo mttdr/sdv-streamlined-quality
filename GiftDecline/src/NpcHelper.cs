@@ -138,8 +138,7 @@
 		/// <summary>Reset the gift taste of all NPCs.</summary>
 		public static void ResetGiftTastes()
 		{
-			// Cannot restore default tastes. They are not yet stored.
-			if (DefaultTastesXnb.Count == 0) return;
+			if (DefaultTastesXnb.Count == 0) throw new Exception("Cannot restore default tastes. They are not yet stored.");
 
 			foreach (string name in DefaultTastesXnb.Keys)
 			{

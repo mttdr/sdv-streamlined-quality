@@ -1,4 +1,8 @@
-﻿## 1.1.3
+﻿## 1.1.4
+
+- Fix: Error when starting a new game (for real this time)
+
+## 1.1.3
 
 - Fix: NullReferenceException when either an NPC or item was not found in the game (in case a mod got removed)
 - Fix: Error when starting a new game
