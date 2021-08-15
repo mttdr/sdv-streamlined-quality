@@ -1,7 +1,7 @@
 ﻿## 1.1.0
 
 - Feature: Add config to adjust special order rewards (board in front of Lewis' house)
-- Fix: Round up the adjust quest value to match the regular profit margin handling
+- Fix: Round up the adjusted quest value to match the regular profit margin handling
 
 ## 1.0.4
 
