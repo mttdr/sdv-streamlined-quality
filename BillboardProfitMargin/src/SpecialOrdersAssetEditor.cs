@@ -20,9 +20,6 @@
 			this.configMultiplier = config.UseProfitMarginForSpecialOrders
 				? Game1.player.difficultyModifier
 				: config.CustomProfitMarginForSpecialOrders;
-
-			Logger.Debug("configMultiplier = " + this.configMultiplier);
-			Logger.Debug("difficultyModifier = " + Game1.player.difficultyModifier);
 		}
 
 		/// <summary>Get whether this instance can edit the given asset.</summary>
