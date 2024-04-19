@@ -17,7 +17,7 @@
 			while (enumerator.MoveNext())
 			{
 				// Mailbox quests have an ID greater than 0
-				if (enumerator.Current.id.Value == 0 && enumerator.Current is ItemDeliveryQuest itemDeliveryQuest)
+				if (enumerator.Current.id.Value == null && enumerator.Current is ItemDeliveryQuest itemDeliveryQuest)
 				{
 					quests.Add(itemDeliveryQuest);
 				}

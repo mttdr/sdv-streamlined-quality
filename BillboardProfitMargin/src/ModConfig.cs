@@ -1,4 +1,4 @@
-﻿namespace BillboardProfitMargin
+namespace BillboardProfitMargin
 {
 	/// <summary>Mod Configuration settings.</summary>
 	internal class ModConfig

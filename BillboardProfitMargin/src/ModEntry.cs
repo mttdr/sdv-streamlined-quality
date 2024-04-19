@@ -1,11 +1,15 @@
-﻿namespace BillboardProfitMargin
+namespace BillboardProfitMargin
 {
 	using Common;
 	using StardewModdingAPI;
 	using StardewModdingAPI.Events;
 	using StardewValley;
+	using StardewValley.GameData.SpecialOrders;
 	using StardewValley.Menus;
 	using StardewValley.Quests;
+	using StardewValley.SpecialOrders;
+	using System;
+	using System.Collections.Generic;
 
 	/// <summary>Main class.</summary>
 	internal class ModEntry : Mod
@@ -31,8 +35,8 @@
 				return;
 			}
 
+			helper.Events.Content.AssetRequested += this.OnAssetRequested;
 			helper.Events.GameLoop.DayStarted += this.OnDayStarted;
-			helper.Events.GameLoop.SaveLoaded += this.OnSaveLoaded;
 			helper.Events.Display.MenuChanged += this.OnMenuChanged;
 		}
 
@@ -40,7 +44,14 @@
 		// once the quest is completed, it needs to be updated again along with the reward
 		private void UpdateItemDeliveryQuest(ItemDeliveryQuest quest)
 		{
-			if (quest.deliveryItem.Value == null)
+			if (quest.ItemId == null)
+			{
+				Logger.Trace("Can not adjust reward for daily quest that is managed by Quest Framework.");
+				return;
+			}
+
+			Item questDeliveryItem = ItemRegistry.Create(quest.ItemId);
+			if (questDeliveryItem.salePrice(true) == 0)
 			{
 				Logger.Trace("Can not adjust reward for daily quest that is managed by Quest Framework.");
 				return;
@@ -49,7 +60,8 @@
 			// item delivery quests don't have a reward property
 			// instead, the reward is calculated from the item being requested once the quest has been completed
 			// this assumes that the reward is always three times the item value
-			int originalReward = quest.deliveryItem.Value.Price * 3;
+			// salePrice is price to buy from store, price to sell is divided by two.
+			int originalReward = (questDeliveryItem.salePrice(true) / 2) * 3;
 			int adjustedReward = QuestHelper.GetAdjustedReward(originalReward, this.config);
 
 			if (QuestHelper.GetReward(quest) == adjustedReward) return;
@@ -67,14 +79,6 @@
 		{
 			// wait for Quest Framework to potentially initialize a quest
 			this.Helper.Events.GameLoop.UpdateTicked += this.OnDayStartedDelayed;
-		}
-
-		/// <summary>Raised after each tick.</summary>
-		/// <param name="sender">The event sender.</param>
-		/// <param name="e">The event data.</param>
-		private void OnSaveLoaded(object sender, SaveLoadedEventArgs e)
-		{
-			this.Helper.Content.AssetEditors.Add(new SpecialOrdersAssetEditor(this.config));
 		}
 
 		private void OnMenuChanged(object sender, MenuChangedEventArgs e)
@@ -103,6 +107,60 @@
 			}
 
 			QuestHelper.AdjustRewardImmediately(dailyQuest, this.config);
+		}
+
+		private void OnAssetRequested(object sender, AssetRequestedEventArgs e)
+		{
+			if (e.NameWithoutLocale.IsEquivalentTo("Data/SpecialOrders"))
+			{
+				var specialOrderMultiplier = this.config.UseProfitMarginForSpecialOrders
+				? Game1.player.difficultyModifier
+				: config.CustomProfitMarginForSpecialOrders;
+
+				e.Edit(questsData =>
+				{
+					// update monetary rewards for special order quests
+					IDictionary<string, SpecialOrderData> quests = questsData.AsDictionary<string, SpecialOrderData>().Data;
+
+					// https://stackoverflow.com/a/31767807
+					// .ToList is part of System.Linq
+					// Without it, the loop would error after an assignment to a dictionary element
+					foreach (KeyValuePair<string, SpecialOrderData> questData in quests)
+					{
+						SpecialOrderData quest = questData.Value;
+						foreach (SpecialOrderRewardData reward in quest.Rewards)
+						{
+							if (reward.Type != "Money")
+							{
+								continue;
+							}
+
+							Dictionary<string, string> data = reward.Data;
+
+							if (!data.ContainsKey("Amount")) throw new Exception("Could not get 'Amount' for special order quest.");
+							string amount = data["Amount"];
+
+							// amount is dictated by the requested resource with a multiplier
+							if (amount.StartsWith("{"))
+							{
+								// There is actually nothing to do here.
+								// The base price is already taking the profit margin into account.
+
+								// string multiplier = data.ContainsKey("Multiplier") ? data["Multiplier"] : "100";
+								// int newMultiplier = (int)Math.Ceiling(int.Parse(multiplier) * this.configMultiplier);
+								// data["Multiplier"] = newMultiplier.ToString();
+							}
+
+							// reward is a fixed gold amount
+							else
+							{
+								int newAmount = (int)Math.Ceiling(int.Parse(amount) * specialOrderMultiplier);
+								data["Amount"] = newAmount.ToString();
+							}
+						}
+					}
+				});
+			}
 		}
 	}
 }

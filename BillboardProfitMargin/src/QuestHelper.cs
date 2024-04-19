@@ -1,4 +1,4 @@
-﻿namespace BillboardProfitMargin
+namespace BillboardProfitMargin
 {
 	using System;
 	using Common;
