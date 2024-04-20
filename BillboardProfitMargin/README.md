@@ -25,9 +25,10 @@ Compatible with:
 
 This mod can be used on an existing save.
 
-For special orders (the board in front of Lewis' house),
-please note however that only newly accepted quests will have their reward updated,
+For special orders (the board in front of Lewis' house) however,
+please note that only newly accepted quests will have their reward updated,
 and that those quests rewards remain after you remove the mod again.
 New quests after mod removal will have their original reward value again.
 
-Reason being that special order rewards are already written to the save file by the game once the quest has been accepted.
+Reason being that special order rewards are already written to the save file by
+the game once the quest has been accepted.

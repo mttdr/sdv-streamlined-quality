@@ -16,7 +16,7 @@
 			var enumerator = Game1.player.questLog.GetEnumerator();
 			while (enumerator.MoveNext())
 			{
-				// Mailbox quests have an ID greater than 0
+				// daily quests have no ID
 				if (enumerator.Current.id.Value == null && enumerator.Current is ItemDeliveryQuest itemDeliveryQuest)
 				{
 					quests.Add(itemDeliveryQuest);
