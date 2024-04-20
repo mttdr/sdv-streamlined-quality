@@ -54,11 +54,11 @@
 				EventHandler.OnNpcListChanged(e);
 		}
 
-		private void OnItemRemoved(Item plainItem)
+		private void OnItemRemoved(Item item)
 		{
 			if (!this.isInDialog) return;
 
-			if (!(plainItem is StardewValley.Object item)) return;
+			if (!(item is StardewValley.Object)) return;
 			if (!item.canBeGivenAsGift()) return; // e.g. Tools or any placable object
 
 			IEnumerator<NPC> enumerator = Game1.player.currentLocation.characters.GetEnumerator();
@@ -67,7 +67,7 @@
 				NPC npc = enumerator.Current;
 				if (NpcHelper.AcceptsGifts(npc) && NpcHelper.HasJustReceivedGift(npc, item))
 				{
-					Logger.Trace(npc.Name + " received gift #" + item.ParentSheetIndex + " (" + item.Name + ")");
+					Logger.Trace(npc.Name + " received gift #" + item.ItemId + " (" + item.Name + ")");
 					SaveGameHelper.HandleReceivedGift(npc, item);
 					return;
 				}
@@ -75,9 +75,10 @@
 
 			foreach (ItemDeliveryQuest quest in QuestLogHelper.GetDailyItemDeliveryQuests())
 			{
-				if (quest.deliveryItem.Value.ParentSheetIndex == item.ParentSheetIndex && quest.hasReward())
+				Item questDeliveryItem = ItemRegistry.Create(quest.ItemId.Value);
+				if (questDeliveryItem.ItemId == item.ItemId && quest.hasReward())
 				{
-					Logger.Trace("Handed over quest item");
+					Logger.Trace("Handed over quest item.");
 					return;
 				}
 			}
