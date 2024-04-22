@@ -1,4 +1,8 @@
-﻿## 1.1.4
+﻿## 1.1.5
+
+- Fix: Update to Stardew Valley 1.6
+
+## 1.1.4
 
 - Fix: Error when starting a new game (for real this time)
 
