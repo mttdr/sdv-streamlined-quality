@@ -41,8 +41,6 @@
 			{
 				this.Helper.Events.GameLoop.UpdateTicked -= this.OnUpdateTicked;
 				this.Helper.Events.Content.AssetRequested += this.OnAssetRequested;
-
-				// this.Helper.Content.AssetEditors.Add(new BundleAssetEditor(this.config.BundleIngredientQualityMultiplicator));
 			}
 
 			++this.ticks;
@@ -129,7 +127,7 @@
 				if (!(enumerator.Current is StardewValley.Object item)) return;
 
 				// quality is already regular, nothing to do
-				// otherwise the below code would "autosort" items to the first free slot when manually organizing the inventory
+				// otherwise re-adding the item would "autosort" them to the first free slot when manually organizing the inventory
 				if (item.Quality == 0) return;
 
 				// remove quality

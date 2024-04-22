@@ -20,7 +20,6 @@
 
 	<ItemGroup>
 		<Compile Include="../Common/src/Logger.cs" />
-		<Compile Include="../Common/src/QuestLogHelper.cs" />
 	</ItemGroup>
 
 </Project>

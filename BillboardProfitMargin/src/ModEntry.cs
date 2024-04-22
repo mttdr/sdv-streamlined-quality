@@ -2,6 +2,7 @@ namespace BillboardProfitMargin
 {
 	using System;
 	using System.Collections.Generic;
+	using System.Text.RegularExpressions;
 	using Common;
 	using StardewModdingAPI;
 	using StardewModdingAPI.Events;
@@ -39,31 +40,6 @@ namespace BillboardProfitMargin
 			helper.Events.Display.MenuChanged += this.OnMenuChanged;
 		}
 
-		private void UpdateItemDeliveryQuest(ItemDeliveryQuest quest)
-		{
-			if (quest.ItemId.Value == null)
-			{
-				Logger.Trace("Can not adjust reward for daily quest that is managed by Quest Framework.");
-				return;
-			}
-
-			Item questDeliveryItem = ItemRegistry.Create(quest.ItemId.Value);
-			if (questDeliveryItem.sellToStorePrice() == 0)
-			{
-				Logger.Warn("Quest item '" + questDeliveryItem.Name + "' has no selling price. Reward won't be adjusted.");
-				return;
-			}
-
-			// item delivery quests don't have a reward property
-			// instead, the reward is calculated from the item being requested once the quest has been completed
-			// this assumes that the reward is always three times the item value
-			int originalReward = questDeliveryItem.sellToStorePrice() * 3;
-
-			int adjustedReward = QuestHelper.GetAdjustedReward(originalReward, this.config);
-			QuestHelper.SetReward(quest, adjustedReward);
-			QuestHelper.UpdateDescription(quest, originalReward, adjustedReward);
-		}
-
 		private void OnDayStarted(object sender, DayStartedEventArgs e)
 		{
 			// wait for Quest Framework to potentially initialize a quest
@@ -72,12 +48,23 @@ namespace BillboardProfitMargin
 
 		private void OnMenuChanged(object sender, MenuChangedEventArgs e)
 		{
-			// for item delivery quests, the description and reward would reset when they get completed, so we set it every time it is viewed
-			if (e.NewMenu is QuestLog)
+			// The description would reset when a quest gets completed, so we set it every time it is viewed.
+			if (!(e.NewMenu is QuestLog)) return;
+
+			var enumerator = Game1.player.questLog.GetEnumerator();
+			while (enumerator.MoveNext())
 			{
-				foreach (ItemDeliveryQuest quest in QuestLogHelper.GetDailyItemDeliveryQuests())
+				Quest quest = enumerator.Current;
+				if (quest.id.Value != null) continue; // Daily quests have no ID
+
+				int currentReward = QuestHelper.GetReward(quest);
+				Match match = Regex.Match(quest.questDescription, "[0-9]+g");
+
+				if (match.Value != $"{currentReward}g")
 				{
-					this.UpdateItemDeliveryQuest(quest);
+					int originalReward = int.Parse(match.Value.Substring(0, match.Length - 1));
+					QuestHelper.UpdateDescription(quest, originalReward, QuestHelper.GetReward(quest));
+					Logger.Trace($"Updated quest description for \"{quest.GetName()}\" to match the actual reward.");
 				}
 			}
 		}
@@ -90,13 +77,6 @@ namespace BillboardProfitMargin
 			if (dailyQuest == null) return;
 
 			QuestHelper.LoadQuestInfo(dailyQuest);
-
-			if (dailyQuest is ItemDeliveryQuest itemDeliveryQuest)
-			{
-				this.UpdateItemDeliveryQuest(itemDeliveryQuest);
-				return;
-			}
-
 			QuestHelper.AdjustRewardImmediately(dailyQuest, this.config);
 		}
 
@@ -108,10 +88,10 @@ namespace BillboardProfitMargin
 				? Game1.player.difficultyModifier
 				: this.config.CustomProfitMarginForSpecialOrders;
 
-				e.Edit(questsData =>
+				e.Edit(assetData =>
 				{
 					// update monetary rewards for special order quests
-					IDictionary<string, SpecialOrderData> quests = questsData.AsDictionary<string, SpecialOrderData>().Data;
+					IDictionary<string, SpecialOrderData> quests = assetData.AsDictionary<string, SpecialOrderData>().Data;
 
 					// https://stackoverflow.com/a/31767807
 					// .ToList is part of System.Linq

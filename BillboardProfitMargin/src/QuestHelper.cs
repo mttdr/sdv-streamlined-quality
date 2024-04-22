@@ -23,8 +23,6 @@ namespace BillboardProfitMargin
 					return quest.reward.Value;
 				case SlayMonsterQuest quest:
 					return quest.reward.Value;
-				case SocializeQuest:
-					return 0;
 				default:
 					throw new Exception("Can not get reward of unsupported quest type: " + genericQuest.ToString());
 			}
@@ -49,8 +47,6 @@ namespace BillboardProfitMargin
 				case ItemDeliveryQuest quest:
 					quest.moneyReward.Value = reward;
 					break;
-				case SocializeQuest:
-					break; // Does not grant money, so is ignored
 				default:
 					throw new Exception("Can not set reward for unsupported quest type: " + genericQuest.ToString());
 			}
@@ -85,10 +81,25 @@ namespace BillboardProfitMargin
 		/// <param name="config">Config object.</param>
 		public static void AdjustRewardImmediately(Quest genericQuest, ModConfig config)
 		{
+			if (genericQuest is SocializeQuest)
+			{
+				Logger.Trace("Ignoring quest type SocializeQuest. It has no monetary reward.");
+				return;
+			}
+
 			int originalReward = GetReward(genericQuest);
 			int adjustedReward = GetAdjustedReward(originalReward, config);
 			SetReward(genericQuest, adjustedReward);
 			UpdateDescription(genericQuest, originalReward, adjustedReward);
+
+			if (GetReward(genericQuest) == adjustedReward)
+			{
+				Logger.Trace($"Set reward for quest \"{genericQuest.GetName()}\" from {originalReward} to {adjustedReward}.");
+			}
+			else
+			{
+				Logger.Error($"Failed to set reward for quest \"{genericQuest.GetName()}\" from {originalReward} to {adjustedReward}.");
+			}
 		}
 
 		/// <summary>Load quest information if the quest type allows it.</summary>
@@ -109,8 +120,9 @@ namespace BillboardProfitMargin
 				case SlayMonsterQuest quest:
 					quest.loadQuestInfo();
 					break;
-				case SocializeQuest:
-					break; // Does not grant money, so is ignored
+				case SocializeQuest quest:
+					quest.loadQuestInfo();
+					break;
 				default:
 					Logger.Warn("Cannot load quest info for unknown quest type: " + genericQuest.ToString()); break;
 			}
