@@ -3,8 +3,8 @@
 	"Author": "desto",
 	"Version": "1.0.2",
 	"Description": "Drop the quality level of all items to be regular quality.",
-	"UniqueID": "desto.RegularQuality",
-	"EntryDll": "RegularQuality.dll",
+	"UniqueID": "desto.StreamlinedQuality",
+	"EntryDll": "StreamlinedQuality.dll",
 	"MinimumApiVersion": "4.0.0",
 	"UpdateKeys": [ "Nexus:5090" ],
 	"Dependencies": [

@@ -1,4 +1,4 @@
-﻿namespace RegularQuality
+﻿namespace StreamlinedQuality
 {
 	using System.Collections.Generic;
 	using System.Linq;

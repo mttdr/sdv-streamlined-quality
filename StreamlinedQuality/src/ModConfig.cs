@@ -1,4 +1,4 @@
-﻿namespace RegularQuality
+﻿namespace StreamlinedQuality
 {
 	/// <summary>Mod Configuration settings.</summary>
 	internal class ModConfig

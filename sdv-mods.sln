@@ -3,11 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26124.0
 MinimumVisualStudioVersion = 15.0.26124.0
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RegularQuality", "RegularQuality\RegularQuality.csproj", "{A4AE74C1-B45D-4ED5-A8C9-224EFD8C4EDC}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GiftDecline", "GiftDecline\GiftDecline.csproj", "{5821EBE3-C82E-47DD-A3C4-EAE775E013EF}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BillboardProfitMargin", "BillboardProfitMargin\BillboardProfitMargin.csproj", "{3114DEB3-6833-4B80-90CE-398161B33677}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StreamlinedQuality", "StreamlinedQuality\StreamlinedQuality.csproj", "{A4AE74C1-B45D-4ED5-A8C9-224EFD8C4EDC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
