@@ -1,13 +1,11 @@
 ﻿{
-	"Name": "Regular Quality",
-	"Author": "desto",
-	"Version": "1.0.2",
+	"Name": "Streamlined Quality",
+	"Author": "drgeppo",
+	"Version": "1.0.0",
 	"Description": "Drop the quality level of all items to be regular quality.",
-	"UniqueID": "desto.StreamlinedQuality",
+	"UniqueID": "drgeppo.StreamlinedQuality",
 	"EntryDll": "StreamlinedQuality.dll",
 	"MinimumApiVersion": "4.0.0",
-	"UpdateKeys": [ "Nexus:5090" ],
-	"Dependencies": [
-		{"UniqueID": "minervamaga.CP.HarderCCBundles", "IsRequired": false}
-	]
+	"UpdateKeys": [ "Nexus:????" ],
+	"Dependencies": []
 }
