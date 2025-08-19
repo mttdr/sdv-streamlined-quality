@@ -2,10 +2,13 @@
 {
 	using System.Collections.Generic;
 	using System.Linq;
+	using System.Transactions;
 	using Common;
+	using Force.DeepCloner;
 	using StardewModdingAPI;
 	using StardewModdingAPI.Events;
 	using StardewValley;
+	using StardewValley.Extensions;
 	using StardewValley.GameData.Bundles;
 
 	/// <summary>Main class.</summary>
@@ -19,9 +22,17 @@
 			helper.Events.Player.InventoryChanged += this.OnInventoryChanged;
 		}
 
+		static void FixMessages(StardewValley.Object item)
 		{
+			// Look for existing "message notification" and if so delete it
+			// Necessary to avoid a notification with double or triple quantity
+			if (Game1.doesHUDMessageExist(item.DisplayName))
 			{
+				for (int i = 0; i < Game1.hudMessages.Count; i++)
 				{
+					if (Game1.hudMessages[i].message == item.DisplayName)
+						Game1.hudMessages.Remove(Game1.hudMessages[i]);
+				}
 			}
 		}
 
@@ -39,18 +50,71 @@
 				// not an item with a quality property, skip
 				if (!(enumerator.Current is StardewValley.Object item)) return;
 
+				// Always retain quality of Artisan Goods (ie: aged in the Cellar)
+				if (item.Category is Object.artisanGoodsCategory) return;
+
+				// reduce to Iridium items to regular quality, but double item quantity
+				// (fair, in the vanilla game iridium quality sells for twice the price)
+				if (item.Quality == 4)
+				{
+					Game1.player.removeItemFromInventory(item);
+					item.Quality = 0;
+					StardewValley.Item duplicate = item.DeepClone();
+
+					// Clear last notification then re-add the item
+					FixMessages(item);
+
+					Game1.player.addItemToInventory(item);
+					Game1.player.addItemToInventory(duplicate);
+					return;
+				}
+
+				// Keep Gold quality items of only certain categories
+				// (mostly for selling at higher profit early game,
+				// complete bundles, give as gift, use at Luau or the Fair)
+				if (item.Quality == 2)
+				{
+					if (item.Category is Object.EggCategory) return;
+					if (item.Category is Object.MilkCategory) return;
+					if (item.Category is Object.VegetableCategory) return;
+					if (item.Category is Object.sellAtPierres) return;
+					if (item.Category is Object.sellAtPierresAndMarnies) return;
+					if (item.Category is Object.FruitsCategory)
+					{
+						// I don't care about Gold forage fruits
+						if (item.Name != "Spice Berry" &&
+							item.Name != "Blackberry" &&
+							item.Name != "Salmonberry" &&
+							item.Name != "Wild Plum" &&
+							item.Name != "Cactus Fruit" &&
+							item.Name != "Coconut") return;
+					}
+
+					if (item.Category is Object.FishCategory)
+					{
+						// I don't care about Gold quality molluscs
+						if (item.Name != "Clam" &&
+							item.Name != "Cockle" &&
+							item.Name != "Mussel" &&
+							item.Name != "Oyster") return;
+					}
+				}
+
 				// quality is already regular, nothing to do
-				// otherwise re-adding the item would "autosort" them to the first free slot when manually organizing the inventory
+				// otherwise re-adding the item would "autosort" them to
+				// the first free slot when manually organizing the inventory
 				if (item.Quality == 0) return;
 
-				// remove quality
-				// because this happens only AFTER the item was added to the inventory,
-				// make a best effort to stack the item with an already existing stack
+				// Finally reduce Silver quality to Regular
+				// (because this happens only AFTER the item was added to the inventory,
+				// make a best effort to stack the item with an already existing stack)
 				Game1.player.removeItemFromInventory(item);
 				item.Quality = 0;
+
+				// Clear last notification then re-add the item
+				FixMessages(item);
 				Game1.player.addItemToInventory(item);
 			}
 		}
 	}
-}
 }
