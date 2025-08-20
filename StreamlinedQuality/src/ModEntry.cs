@@ -23,6 +23,7 @@
 		{
 			Logger.Init(this.Monitor);
 			this.Config = this.Helper.ReadConfig<ModConfig>();
+			helper.Events.GameLoop.GameLaunched += this.OnGameLaunched;
 			helper.Events.Player.InventoryChanged += this.OnInventoryChanged;
 		}
 
@@ -38,6 +39,100 @@
 						Game1.hudMessages.Remove(Game1.hudMessages[i]);
 				}
 			}
+		}
+
+		private void OnGameLaunched(object sender, GameLaunchedEventArgs e)
+		{
+			// get Generic Mod Config Menu's API (if it's installed)
+			var configMenu = this.Helper.ModRegistry.GetApi<IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");
+			if (configMenu is null)
+				return;
+
+			// register mod
+			configMenu.Register(
+				mod: this.ModManifest,
+				reset: () => this.Config = new ModConfig(),
+				save: () => this.Helper.WriteConfig(this.Config));
+
+			// add some config options
+			configMenu.AddSectionTitle(
+				mod: this.ModManifest,
+				text: () => "Items that will retain Gold Quality:",
+				tooltip: null);
+
+			configMenu.AddParagraph(
+				mod: this.ModManifest,
+				text: () => "Keep in mind that items are only influenced when moved into the player inventory, feel free to test and change these options, objects stored in chests will not be impacted");
+
+			configMenu.AddBoolOption(
+				mod: this.ModManifest,
+				name: () => "Vegetables",
+				tooltip: () => null,
+				getValue: () => this.Config.KeepGoldenVegetables,
+				setValue: value => this.Config.KeepGoldenVegetables = value);
+
+			configMenu.AddBoolOption(
+				mod: this.ModManifest,
+				name: () => "Fruits",
+				tooltip: () => "Includes Fruits that grows on trees, trellies and from rare seeds",
+				getValue: () => this.Config.KeepGoldenFruits,
+				setValue: value => this.Config.KeepGoldenFruits = value);
+
+			configMenu.AddBoolOption(
+				mod: this.ModManifest,
+				name: () => "Wild Fruits",
+				tooltip: () => "Includes Fruit that mostly spawn in the wild",
+				getValue: () => this.Config.KeepGoldenWildFruits,
+				setValue: value => this.Config.KeepGoldenWildFruits = value);
+
+			configMenu.AddBoolOption(
+				mod: this.ModManifest,
+				name: () => "Milk",
+				tooltip: () => "Remember that Gold quality Milk does NOT make for better cheese (Big milk does)",
+				getValue: () => this.Config.KeepGoldenMilk,
+				setValue: value => this.Config.KeepGoldenMilk = value);
+
+			configMenu.AddBoolOption(
+				mod: this.ModManifest,
+				name: () => "Eggs",
+				tooltip: () => "Remember that Gold quality Eggs do NOT make for better mayonaise (Big eggs do)",
+				getValue: () => this.Config.KeepGoldenEggs,
+				setValue: value => this.Config.KeepGoldenEggs = value);
+
+			configMenu.AddBoolOption(
+				mod: this.ModManifest,
+				name: () => "Other Animal Products",
+				tooltip: () => "Duck Feather, Wools, Truffles and Rabbit Foot",
+				getValue: () => this.Config.KeepGoldenAnimalProducts,
+				setValue: value => this.Config.KeepGoldenAnimalProducts = value);
+
+			configMenu.AddBoolOption(
+				mod: this.ModManifest,
+				name: () => "Fish",
+				tooltip: () => "Includes fish that you catch with a fishing rod",
+				getValue: () => this.Config.KeepGoldenFish,
+				setValue: value => this.Config.KeepGoldenFish = value);
+
+			configMenu.AddBoolOption(
+				mod: this.ModManifest,
+				name: () => "Shells & Shellfish",
+				tooltip: () => "What you either find on the beach or in Crab Pots",
+				getValue: () => this.Config.KeepGoldenShells,
+				setValue: value => this.Config.KeepGoldenShells = value);
+
+			configMenu.AddBoolOption(
+				mod: this.ModManifest,
+				name: () => "Foraged Items",
+				tooltip: () => "Mushrooms and other seasonable items that spawn in the wild",
+				getValue: () => this.Config.KeepGoldenForage,
+				setValue: value => this.Config.KeepGoldenForage = value);
+
+			configMenu.AddBoolOption(
+				mod: this.ModManifest,
+				name: () => "Flowers",
+				tooltip: () => null,
+				getValue: () => this.Config.KeepGoldenFlowers,
+				setValue: value => this.Config.KeepGoldenFlowers = value);
 		}
 
 		/// <summary>Raised AFTER the player receives an item.</summary>
