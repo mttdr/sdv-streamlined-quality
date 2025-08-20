@@ -1,15 +1,26 @@
 ﻿namespace StreamlinedQuality
 {
 	/// <summary>Mod Configuration settings.</summary>
-	internal class ModConfig
+	public sealed class ModConfig
 	{
-		/// <summary>Multiply the rarity by this factor and add it on top, e.g.</summary>
-		/// <example>
-		/// normal  = 0 * 4 = 0 (keep)
-		/// silver  = 1 * 4 = 4 (4x on top)
-		/// gold    = 2 * 4 = 8
-		/// iridium = 3 * 4 = 12
-		/// .</example>
-		public int BundleIngredientQualityMultiplicator { get; set; } = 4;
+		public bool KeepGoldenVegetables { get; set; } = true;
+
+		public bool KeepGoldenEggs { get; set; } = true;
+
+		public bool KeepGoldenMilk { get; set; } = true;
+
+		public bool KeepGoldenAnimalProducts { get; set; } = true;
+
+		public bool KeepGoldenFruits { get; set; } = true;
+
+		public bool KeepGoldenWildFruits { get; set; } = false;
+
+		public bool KeepGoldenFish { get; set; } = true;
+
+		public bool KeepGoldenShells { get; set; } = false;
+
+		public bool KeepGoldenForage { get; set; } = false;
+
+		public bool KeepGoldenFlowers { get; set; } = false;
 	}
 }
