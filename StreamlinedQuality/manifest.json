@@ -1,8 +1,8 @@
 ﻿{
-	"Name": "Streamlined Quality",
+	"Name": "Streamlined Item Quality",
 	"Author": "drgeppo",
 	"Version": "1.0.0",
-	"Description": "Drop the quality level of all items to be regular quality.",
+	"Description": "Drop the quality of most items to ease inventory management.",
 	"UniqueID": "drgeppo.StreamlinedQuality",
 	"EntryDll": "StreamlinedQuality.dll",
 	"MinimumApiVersion": "4.0.0",
