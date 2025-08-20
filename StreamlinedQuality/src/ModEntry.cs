@@ -88,6 +88,7 @@
 					if ((item.Category is Object.GreensCategory) && this.Config.KeepGoldenForage) return;
 					if ((item.Category is Object.flowersCategory) && this.Config.KeepGoldenFlowers) return;
 					if ((item.Category is Object.VegetableCategory) && this.Config.KeepGoldenVegetables) return;
+					if ((item.Category is Object.sellAtFishShopCategory) && this.Config.KeepGoldenShells) return;
 					if ((item.Category is Object.sellAtPierresAndMarnies || item.Name == "Truffle") &&
 						 this.Config.KeepGoldenAnimalProducts) return;
 					if ((item.Name == "Sweet Gem Berry") && this.Config.KeepGoldenFruits) return;
@@ -119,10 +120,7 @@
 							item.Name != "Cockle" &&
 							item.Name != "Mussel" &&
 							item.Name != "Oyster") return;
-					}
 
-					if (item.Category is Object.sellAtFishShopCategory)
-					{
 						// Check for shells and molluscs
 						if (this.Config.KeepGoldenShells &&
 							(item.Name == "Clam" ||
