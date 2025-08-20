@@ -57,12 +57,27 @@
 			// add some config options
 			configMenu.AddSectionTitle(
 				mod: this.ModManifest,
-				text: () => "Items that will retain Gold Quality:",
+				text: () => "Retain Gold quality on valuable items:",
+				tooltip: null);
+
+			configMenu.AddNumberOption(
+				mod: this.ModManifest,
+				name: () => "Sell price threshold:",
+				tooltip: () => "Any Gold quality item with sell price above this value will stay untouched, regardless of the checkboxes below",
+				min: 100,
+				max: 1000,
+				interval: 25,
+				getValue: () => this.Config.PriceOverride,
+				setValue: value => this.Config.PriceOverride = value);
+
+			configMenu.AddSectionTitle(
+				mod: this.ModManifest,
+				text: () => "Items that will always retain Gold Quality:",
 				tooltip: null);
 
 			configMenu.AddParagraph(
 				mod: this.ModManifest,
-				text: () => "Keep in mind that items are only influenced when moved into the player inventory, feel free to test and change these options, objects stored in chests will not be impacted");
+				text: () => "Keep in mind that items are only influenced when moved into the player inventory, feel free to test and change these options, objects stored in chests will not be impacted until picked up.");
 
 			configMenu.AddBoolOption(
 				mod: this.ModManifest,
@@ -74,30 +89,16 @@
 			configMenu.AddBoolOption(
 				mod: this.ModManifest,
 				name: () => "Fruits",
-				tooltip: () => "Includes Fruits that grows on trees, trellies and from rare seeds",
+				tooltip: () => "does NOT include berries",
 				getValue: () => this.Config.KeepGoldenFruits,
 				setValue: value => this.Config.KeepGoldenFruits = value);
 
 			configMenu.AddBoolOption(
 				mod: this.ModManifest,
-				name: () => "Wild Fruits",
-				tooltip: () => "Includes Fruit that mostly spawn in the wild",
-				getValue: () => this.Config.KeepGoldenWildFruits,
-				setValue: value => this.Config.KeepGoldenWildFruits = value);
-
-			configMenu.AddBoolOption(
-				mod: this.ModManifest,
-				name: () => "Milk",
-				tooltip: () => "Remember that Gold quality Milk does NOT make for better cheese (Big milk does)",
-				getValue: () => this.Config.KeepGoldenMilk,
-				setValue: value => this.Config.KeepGoldenMilk = value);
-
-			configMenu.AddBoolOption(
-				mod: this.ModManifest,
-				name: () => "Eggs",
-				tooltip: () => "Remember that Gold quality Eggs do NOT make for better mayonaise (Big eggs do)",
-				getValue: () => this.Config.KeepGoldenEggs,
-				setValue: value => this.Config.KeepGoldenEggs = value);
+				name: () => "Milk & Eggs",
+				tooltip: () => "Remember that Gold quality Milk/Eggs do NOT make for better cheese/mayo (Big Milk/Eggs do)",
+				getValue: () => this.Config.KeepGoldenMilkEggs,
+				setValue: value => this.Config.KeepGoldenMilkEggs = value);
 
 			configMenu.AddBoolOption(
 				mod: this.ModManifest,
@@ -178,8 +179,9 @@
 				// complete bundles, give as gift, use at Luau or the Fair)
 				if (item.Quality == 2)
 				{
-					if ((item.Category is Object.EggCategory) && this.Config.KeepGoldenEggs) return;
-					if ((item.Category is Object.MilkCategory) && this.Config.KeepGoldenMilk) return;
+					if (item.Price >= this.Config.PriceOverride) return;
+					if ((item.Category is Object.EggCategory) && this.Config.KeepGoldenMilkEggs) return;
+					if ((item.Category is Object.MilkCategory) && this.Config.KeepGoldenMilkEggs) return;
 					if ((item.Category is Object.GreensCategory) && this.Config.KeepGoldenForage) return;
 					if ((item.Category is Object.flowersCategory) && this.Config.KeepGoldenFlowers) return;
 					if ((item.Category is Object.VegetableCategory) && this.Config.KeepGoldenVegetables) return;
@@ -193,18 +195,7 @@
 						if (this.Config.KeepGoldenFruits &&
 							item.Name != "Spice Berry" &&
 							item.Name != "Blackberry" &&
-							item.Name != "Salmonberry" &&
-							item.Name != "Wild Plum" &&
-							item.Name != "Cactus Fruit" &&
-							item.Name != "Coconut") return;
-
-						if (this.Config.KeepGoldenWildFruits &&
-							(item.Name == "Spice Berry" ||
-							item.Name == "Blackberry" ||
-							item.Name == "Salmonberry" ||
-							item.Name == "Wild Plum" ||
-							item.Name == "Cactus Fruit" ||
-							item.Name == "Coconut")) return;
+							item.Name != "Salmonberry") return;
 					}
 
 					if (item.Category is Object.FishCategory)
