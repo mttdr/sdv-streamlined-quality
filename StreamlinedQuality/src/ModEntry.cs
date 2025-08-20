@@ -88,8 +88,9 @@
 					if ((item.Category is Object.GreensCategory) && this.Config.KeepGoldenForage) return;
 					if ((item.Category is Object.flowersCategory) && this.Config.KeepGoldenFlowers) return;
 					if ((item.Category is Object.VegetableCategory) && this.Config.KeepGoldenVegetables) return;
-					if ((item.Category is Object.sellAtPierres) && this.Config.KeepGoldenAnimalProducts) return;
-					if ((item.Category is Object.sellAtPierresAndMarnies) && this.Config.KeepGoldenAnimalProducts) return;
+					if ((item.Category is Object.sellAtPierresAndMarnies || item.Name == "Truffle") &&
+						 this.Config.KeepGoldenAnimalProducts) return;
+					if ((item.Name == "Sweet Gem Berry") && this.Config.KeepGoldenFruits) return;
 					if (item.Category is Object.FruitsCategory)
 					{
 						// Separate normal Fruit from "Wild Fruit"
