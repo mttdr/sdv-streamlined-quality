@@ -54,30 +54,18 @@
 				reset: () => this.Config = new ModConfig(),
 				save: () => this.Helper.WriteConfig(this.Config));
 
-			// add some config options
-			configMenu.AddSectionTitle(
+			configMenu.AddParagraph(
 				mod: this.ModManifest,
-				text: () => "Retain Gold quality on valuable items:",
-				tooltip: null);
-
-			configMenu.AddNumberOption(
-				mod: this.ModManifest,
-				name: () => "Sell price threshold:",
-				tooltip: () => "Any Gold quality item with sell price above this value will stay untouched, regardless of the checkboxes below",
-				min: 100,
-				max: 1000,
-				interval: 25,
-				getValue: () => this.Config.PriceOverride,
-				setValue: value => this.Config.PriceOverride = value);
+				text: () => "Reminder: Artisan goods are not impacted by this mod and will always retain their quality.\n\nOther kinds of items are only influenced when moved into the player inventory, feel free to test and change these options, objects stored in chests will not be impacted until picked up.");
 
 			configMenu.AddSectionTitle(
 				mod: this.ModManifest,
-				text: () => "Items that will always retain Gold Quality:",
+				text: () => "Items allowed to retain Gold Quality:",
 				tooltip: null);
 
 			configMenu.AddParagraph(
 				mod: this.ModManifest,
-				text: () => "Keep in mind that items are only influenced when moved into the player inventory, feel free to test and change these options, objects stored in chests will not be impacted until picked up.");
+				text: () => "Selected categories will mantain gold quality when picked up.");
 
 			configMenu.AddBoolOption(
 				mod: this.ModManifest,
@@ -134,6 +122,60 @@
 				tooltip: () => null,
 				getValue: () => this.Config.KeepGoldenFlowers,
 				setValue: value => this.Config.KeepGoldenFlowers = value);
+
+			configMenu.AddParagraph(
+				mod: this.ModManifest,
+				text: () => "Use these sliders to only pick up items above a certain sell price.\n(the corresponding checkbox above must be selected)");
+
+			configMenu.AddNumberOption(
+				mod: this.ModManifest,
+				name: () => "Fruit price threshold:",
+				tooltip: () => "Fruit below this sell price will be turned into Regular quality",
+				min: 0,
+				max: 1000,
+				interval: 25,
+				getValue: () => this.Config.MinimumFruitPrice,
+				setValue: value => this.Config.MinimumFruitPrice = value);
+
+			configMenu.AddNumberOption(
+				mod: this.ModManifest,
+				name: () => "Fish price threshold:",
+				tooltip: () => "Fish below this sell price will be turned into Regular quality",
+				min: 0,
+				max: 1000,
+				interval: 25,
+				getValue: () => this.Config.MinimumFishPrice,
+				setValue: value => this.Config.MinimumFishPrice = value);
+
+			configMenu.AddNumberOption(
+				mod: this.ModManifest,
+				name: () => "Shell price threshold:",
+				tooltip: () => "Shells below this sell price will be turned into Regular quality",
+				min: 0,
+				max: 1000,
+				interval: 25,
+				getValue: () => this.Config.MinimumShellPrice,
+				setValue: value => this.Config.MinimumShellPrice = value);
+
+			configMenu.AddNumberOption(
+				mod: this.ModManifest,
+				name: () => "Forage price threshold:",
+				tooltip: () => "Forage below this sell price will be turned into Regular quality",
+				min: 0,
+				max: 1000,
+				interval: 25,
+				getValue: () => this.Config.MinimumForagePrice,
+				setValue: value => this.Config.MinimumForagePrice = value);
+
+			configMenu.AddNumberOption(
+				mod: this.ModManifest,
+				name: () => "Flowers price threshold:",
+				tooltip: () => "Flowers below this sell price will be turned into Regular quality",
+				min: 0,
+				max: 1000,
+				interval: 25,
+				getValue: () => this.Config.MinimumFlowerPrice,
+				setValue: value => this.Config.MinimumFlowerPrice = value);
 		}
 
 		/// <summary>Raised AFTER the player receives an item.</summary>
@@ -179,20 +221,28 @@
 				// complete bundles, give as gift, use at Luau or the Fair)
 				if (item.Quality == 2)
 				{
-					if (item.Price >= this.Config.PriceOverride) return;
+					if ((item.Category is Object.VegetableCategory) && this.Config.KeepGoldenVegetables) return;
 					if ((item.Category is Object.EggCategory) && this.Config.KeepGoldenMilkEggs) return;
 					if ((item.Category is Object.MilkCategory) && this.Config.KeepGoldenMilkEggs) return;
-					if ((item.Category is Object.GreensCategory) && this.Config.KeepGoldenForage) return;
-					if ((item.Category is Object.flowersCategory) && this.Config.KeepGoldenFlowers) return;
-					if ((item.Category is Object.VegetableCategory) && this.Config.KeepGoldenVegetables) return;
-					if ((item.Category is Object.sellAtFishShopCategory) && this.Config.KeepGoldenShells) return;
+					if (item.Category is Object.GreensCategory && this.Config.KeepGoldenForage)
+						if (item.Price >= this.Config.MinimumForagePrice) return;
+
+					if (item.Category is Object.flowersCategory && this.Config.KeepGoldenFlowers)
+						if (item.Price >= this.Config.MinimumFlowerPrice) return;
+
+					if (item.Category is Object.sellAtFishShopCategory && this.Config.KeepGoldenShells)
+						if (item.Price >= this.Config.MinimumShellPrice) return;
+
 					if ((item.Category is Object.sellAtPierresAndMarnies || item.Name == "Truffle") &&
 						 this.Config.KeepGoldenAnimalProducts) return;
-					if ((item.Name == "Sweet Gem Berry") && this.Config.KeepGoldenFruits) return;
-					if (item.Category is Object.FruitsCategory)
+
+					if (item.Name == "Sweet Gem Berry" && this.Config.KeepGoldenShells)
+						if (item.Price >= this.Config.MinimumFruitPrice) return;
+
+					if (item.Category is Object.FruitsCategory && this.Config.KeepGoldenFruits)
 					{
 						// Separate normal Fruit from "Wild Fruit"
-						if (this.Config.KeepGoldenFruits &&
+						if (item.Price >= this.Config.MinimumFruitPrice &&
 							item.Name != "Spice Berry" &&
 							item.Name != "Blackberry" &&
 							item.Name != "Salmonberry") return;
@@ -202,6 +252,7 @@
 					{
 						// Check just for fish caught with a fishing rod
 						if (this.Config.KeepGoldenFish &&
+							item.Price >= this.Config.MinimumFishPrice &&
 							item.Name != "Clam" &&
 							item.Name != "Cockle" &&
 							item.Name != "Mussel" &&
@@ -209,6 +260,7 @@
 
 						// Check for shells and molluscs
 						if (this.Config.KeepGoldenShells &&
+							item.Price >= this.Config.MinimumShellPrice &&
 							(item.Name == "Clam" ||
 							item.Name == "Cockle" ||
 							item.Name == "Mussel" ||
