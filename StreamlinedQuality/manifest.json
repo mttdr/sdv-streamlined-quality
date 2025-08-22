@@ -6,6 +6,10 @@
 	"UniqueID": "drgeppo.StreamlinedQuality",
 	"EntryDll": "StreamlinedQuality.dll",
 	"MinimumApiVersion": "4.0.0",
-	"UpdateKeys": [ "Nexus:????" ],
-	"Dependencies": []
+	"UpdateKeys": [ "Nexus:36894" ],
+	"Dependencies":
+	[{
+      "UniqueID": "spacechase0.GenericModConfigMenu",
+      "IsRequired": false
+	}]
 }
