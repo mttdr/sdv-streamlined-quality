@@ -77,7 +77,7 @@
 			configMenu.AddBoolOption(
 				mod: this.ModManifest,
 				name: () => "Fruits",
-				tooltip: () => "does NOT include berries",
+				tooltip: () => "Includes Sweet Gem Berry, does NOT include wild berries",
 				getValue: () => this.Config.KeepGoldenFruits,
 				setValue: value => this.Config.KeepGoldenFruits = value);
 
@@ -236,14 +236,13 @@
 					if ((item.Category is Object.sellAtPierresAndMarnies || item.Name == "Truffle") &&
 						 this.Config.KeepGoldenAnimalProducts) return;
 
-					if (item.Name == "Sweet Gem Berry" && this.Config.KeepGoldenShells)
+					if (item.Name == "Sweet Gem Berry" && this.Config.KeepGoldenFruits)
 						if (item.Price >= this.Config.MinimumFruitPrice) return;
 
 					if (item.Category is Object.FruitsCategory && this.Config.KeepGoldenFruits)
 					{
-						// Separate normal Fruit from "Wild Fruit"
+						// Price check and always discard wild berries
 						if (item.Price >= this.Config.MinimumFruitPrice &&
-							item.Name != "Spice Berry" &&
 							item.Name != "Blackberry" &&
 							item.Name != "Salmonberry") return;
 					}
