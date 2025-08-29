@@ -192,13 +192,15 @@
 				// not an item with a quality property, skip
 				if (!(enumerator.Current is StardewValley.Object item)) return;
 
-				// Always retain quality of Artisan Goods (ie: aged in the Cellar)
-				if (item.Category is Object.artisanGoodsCategory) return;
-
 				// quality is already regular, nothing to do
 				// otherwise re-adding the item would "autosort" them to
 				// the first free slot when manually organizing the inventory
 				if (item.Quality == 0) return;
+
+				// Always retain quality of Artisan Goods (ie: aged in the Cellar)
+				// and cooked dishes (otherwise Qi Seasoning would be useless)
+				if (item.Category is Object.artisanGoodsCategory) return;
+				if (item.Category is Object.CookingCategory) return;
 
 				// reduce to Iridium items to regular quality, but double item quantity
 				// (fair, in the vanilla game iridium quality sells for twice the price)
