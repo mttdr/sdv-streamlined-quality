@@ -56,7 +56,7 @@
 
 			configMenu.AddParagraph(
 				mod: this.ModManifest,
-				text: () => "Reminder: Artisan goods are not impacted by this mod and will always retain their quality.\n\nOther kinds of items are only influenced when moved into the player inventory, feel free to test and change these options, objects stored in chests will not be impacted until picked up.");
+				text: () => "Reminder: Artisan goods and Cooked dishes are not impacted by this mod and will always retain their quality.\n\nOther kinds of items are only influenced when moved into the player inventory, feel free to test and change these options, objects stored in chests will not be impacted until picked back up by the player.");
 
 			configMenu.AddSectionTitle(
 				mod: this.ModManifest,
@@ -70,7 +70,7 @@
 			configMenu.AddBoolOption(
 				mod: this.ModManifest,
 				name: () => "Vegetables",
-				tooltip: () => null,
+				tooltip: () => "Most of the crops you grow on the farm",
 				getValue: () => this.Config.KeepGoldenVegetables,
 				setValue: value => this.Config.KeepGoldenVegetables = value);
 
@@ -84,21 +84,21 @@
 			configMenu.AddBoolOption(
 				mod: this.ModManifest,
 				name: () => "Milk & Eggs",
-				tooltip: () => "Remember that Gold quality Milk/Eggs do NOT make for better cheese/mayo (Big Milk/Eggs do)",
+				tooltip: () => "Gold quality Milk/Eggs do NOT make for better cheese/mayo (Big Milk/Eggs do)",
 				getValue: () => this.Config.KeepGoldenMilkEggs,
 				setValue: value => this.Config.KeepGoldenMilkEggs = value);
 
 			configMenu.AddBoolOption(
 				mod: this.ModManifest,
 				name: () => "Other Animal Products",
-				tooltip: () => "Duck Feather, Wools, Truffles and Rabbit Foot",
+				tooltip: () => "Duck Feather, Wool, Truffles and Rabbit Foot",
 				getValue: () => this.Config.KeepGoldenAnimalProducts,
 				setValue: value => this.Config.KeepGoldenAnimalProducts = value);
 
 			configMenu.AddBoolOption(
 				mod: this.ModManifest,
 				name: () => "Fish",
-				tooltip: () => "Includes fish that you catch with a fishing rod",
+				tooltip: () => "Fish that you actively catch with a fishing rod",
 				getValue: () => this.Config.KeepGoldenFish,
 				setValue: value => this.Config.KeepGoldenFish = value);
 
@@ -112,20 +112,20 @@
 			configMenu.AddBoolOption(
 				mod: this.ModManifest,
 				name: () => "Foraged Items",
-				tooltip: () => "Mushrooms and other seasonable items that spawn in the wild",
+				tooltip: () => "Mushrooms and other seasonal items that spawn in the wild",
 				getValue: () => this.Config.KeepGoldenForage,
 				setValue: value => this.Config.KeepGoldenForage = value);
 
 			configMenu.AddBoolOption(
 				mod: this.ModManifest,
 				name: () => "Flowers",
-				tooltip: () => null,
+				tooltip: () => "Includes both flowers that you plant and ones that spawn in the wild",
 				getValue: () => this.Config.KeepGoldenFlowers,
 				setValue: value => this.Config.KeepGoldenFlowers = value);
 
 			configMenu.AddParagraph(
 				mod: this.ModManifest,
-				text: () => "Use these sliders to only pick up items above a certain sell price.\n(the corresponding checkbox above must be selected)");
+				text: () => "Use the sliders below to only pick up Gold Quality items that sell above a certain price.\n(the corresponding checkbox above must also be selected)");
 
 			configMenu.AddNumberOption(
 				mod: this.ModManifest,
