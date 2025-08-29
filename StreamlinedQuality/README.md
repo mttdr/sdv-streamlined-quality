@@ -2,9 +2,9 @@
 
 Drop the quality level of most items in order to ease inventory management.
 
-- Artisan goods are not impacted by this mod and always retain their quality
-- Silver quality items are always downgraded to Regular quality (the sell price increase is not worth it)
-- Iridium quality items are downgraded to Regular quality, but are doubled in quantity (in line with Vanilla game, where the sell price is double, also removes the dilemma of "is this worth selling now, or should I process it? now you can process double the quantity")
+- Artisan goods and Cooked dishes are not impacted by this mod and always retain their quality
+- Silver quality items are always downgraded to Regular quality
+- Iridium quality items are downgraded to Regular quality, but are doubled in quantity (in line with Vanilla game, where the sell price is double, also removes the dilemma of "is this worth selling now, or should I process it?" now you can either sell at the same profit or process double the quantity)
 - Gold quality items are retained by default, but you can set what item categories should or should not be downgraded via the Mod Config Menu, with the possibility to set a price threshold (I do not care about about "gold quality" item that sells for very little)
 
 ## Installation
