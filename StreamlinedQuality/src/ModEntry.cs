@@ -176,6 +176,22 @@
 				interval: 25,
 				getValue: () => this.Config.MinimumFlowerPrice,
 				setValue: value => this.Config.MinimumFlowerPrice = value);
+
+			configMenu.AddSectionTitle(
+				mod: this.ModManifest,
+				text: () => "\nIridium Quality Reduction:",
+				tooltip: null);
+
+			configMenu.AddBoolOption(
+				mod: this.ModManifest,
+				name: () => "Reduce to double regular items",
+				tooltip: () => "Uncheck to keep collecting Iridium quality items",
+				getValue: () => this.Config.ReduceIridiumQuality,
+				setValue: value => this.Config.ReduceIridiumQuality = value);
+
+			configMenu.AddParagraph(
+				mod: this.ModManifest,
+				text: () => "Reducing Iridium quality to regular items will double the quantity of the object obtained.\n\nThis will ease inventory management while letting you keep the same profit when selling the items outright. It also gives you the chance to process double the artisan goods.");
 		}
 
 		/// <summary>Raised AFTER the player receives an item.</summary>
@@ -203,8 +219,9 @@
 				if (item.Category is Object.CookingCategory) return;
 
 				// reduce to Iridium items to regular quality, but double item quantity
-				// (fair, in the vanilla game iridium quality sells for twice the price)
-				if (item.Quality == 4)
+				// (fair, since iridium quality sells for twice the regular price)
+				// can be disabled in the config menu
+				if (item.Quality == 4 && this.Config.ReduceIridiumQuality)
 				{
 					Game1.player.removeItemFromInventory(item);
 					item.Quality = 0;

@@ -3,6 +3,8 @@
 	/// <summary>Mod Configuration settings.</summary>
 	public sealed class ModConfig
 	{
+		public bool ReduceIridiumQuality { get; set; } = true;
+
 		public bool KeepGoldenVegetables { get; set; } = true;
 
 		public bool KeepGoldenMilkEggs { get; set; } = true;
