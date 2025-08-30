@@ -56,16 +56,16 @@
 
 			configMenu.AddParagraph(
 				mod: this.ModManifest,
-				text: () => "Reminder: Artisan goods and Cooked dishes are not impacted by this mod and will always retain their quality.\n\nOther kinds of items are only influenced when moved into the player inventory, feel free to test and change these options, objects stored in chests will not be impacted until picked back up by the player.");
+				text: () => "Artisan goods and Cooked dishes are not impacted by this mod and will always retain their quality.\n\nOther kinds of items are only influenced when moved into the player inventory, feel free to test and change these options, objects stored in chests will not be impacted until picked back up by the player.");
 
 			configMenu.AddSectionTitle(
 				mod: this.ModManifest,
-				text: () => "Items allowed to retain Gold Quality:",
+				text: () => "Items allowed to retain Gold or Iridium Quality:",
 				tooltip: null);
 
 			configMenu.AddParagraph(
 				mod: this.ModManifest,
-				text: () => "Selected categories will mantain gold quality when picked up.");
+				text: () => "Selected categories will mantain Gold/Iridium quality when picked up.");
 
 			configMenu.AddBoolOption(
 				mod: this.ModManifest,
@@ -123,9 +123,14 @@
 				getValue: () => this.Config.KeepGoldenFlowers,
 				setValue: value => this.Config.KeepGoldenFlowers = value);
 
+			configMenu.AddSectionTitle(
+				mod: this.ModManifest,
+				text: () => "\nMinimum Price Settings:",
+				tooltip: null);
+
 			configMenu.AddParagraph(
 				mod: this.ModManifest,
-				text: () => "Use the sliders below to only pick up Gold Quality items that sell above a certain price.\n(the corresponding checkbox above must also be selected)");
+				text: () => "Having cheap items occupy precious inventory slots is very annoying!\n\nUse the sliders below to only retain Gold/Iridium Quality items that sell above a certain price.\n(the corresponding checkbox above must also be selected!)");
 
 			configMenu.AddNumberOption(
 				mod: this.ModManifest,
@@ -235,10 +240,10 @@
 					return;
 				}
 
-				// Keep Gold quality items of selected categories
+				// Keep Gold/Iridium quality items of selected categories
 				// (mostly for selling at higher profit early game,
 				// complete bundles, give as gift, use at Luau or the Fair)
-				if (item.Quality == 2)
+				if (item.Quality >= 2)
 				{
 					if ((item.Category is Object.VegetableCategory) && this.Config.KeepGoldenVegetables) return;
 					if ((item.Category is Object.EggCategory) && this.Config.KeepGoldenMilkEggs) return;
