@@ -16,6 +16,7 @@
 	{
 		/// <summary>The mod configuration from the player.</summary>
 		private ModConfig Config;
+		int AdjustedPrice;
 
 		/// <summary>The mod entry point, called after the mod is first loaded.</summary>
 		/// <param name="helper">Provides simplified APIs for writing mods.</param>
@@ -245,28 +246,34 @@
 				// complete bundles, give as gift, use at Luau or the Fair)
 				if (item.Quality >= 2)
 				{
+					// Price adjustment according to the quality:
+					if (item.Quality == 2)
+						this.AdjustedPrice = item.Price + (item.Price / 2);
+					else if (item.Quality == 4)
+						this.AdjustedPrice = item.Price * 2;
+
 					if ((item.Category is Object.VegetableCategory) && this.Config.KeepGoldenVegetables) return;
 					if ((item.Category is Object.EggCategory) && this.Config.KeepGoldenMilkEggs) return;
 					if ((item.Category is Object.MilkCategory) && this.Config.KeepGoldenMilkEggs) return;
 					if (item.Category is Object.GreensCategory && this.Config.KeepGoldenForage)
-						if (item.Price >= this.Config.MinimumForagePrice) return;
+						if (this.AdjustedPrice >= this.Config.MinimumForagePrice) return;
 
 					if (item.Category is Object.flowersCategory && this.Config.KeepGoldenFlowers)
-						if (item.Price >= this.Config.MinimumFlowerPrice) return;
+						if (this.AdjustedPrice >= this.Config.MinimumFlowerPrice) return;
 
 					if (item.Category is Object.sellAtFishShopCategory && this.Config.KeepGoldenShells)
-						if (item.Price >= this.Config.MinimumShellPrice) return;
+						if (this.AdjustedPrice >= this.Config.MinimumShellPrice) return;
 
 					if ((item.Category is Object.sellAtPierresAndMarnies || item.Name == "Truffle") &&
 						 this.Config.KeepGoldenAnimalProducts) return;
 
 					if (item.Name == "Sweet Gem Berry" && this.Config.KeepGoldenFruits)
-						if (item.Price >= this.Config.MinimumFruitPrice) return;
+						if (this.AdjustedPrice >= this.Config.MinimumFruitPrice) return;
 
 					if (item.Category is Object.FruitsCategory && this.Config.KeepGoldenFruits)
 					{
 						// Price check and always discard wild berries
-						if (item.Price >= this.Config.MinimumFruitPrice &&
+						if (this.AdjustedPrice >= this.Config.MinimumFruitPrice &&
 							item.Name != "Blackberry" &&
 							item.Name != "Salmonberry") return;
 					}
@@ -275,7 +282,7 @@
 					{
 						// Check just for fish caught with a fishing rod
 						if (this.Config.KeepGoldenFish &&
-							item.Price >= this.Config.MinimumFishPrice &&
+							this.AdjustedPrice >= this.Config.MinimumFishPrice &&
 							item.Name != "Clam" &&
 							item.Name != "Cockle" &&
 							item.Name != "Mussel" &&
@@ -283,7 +290,7 @@
 
 						// Check for shells and molluscs
 						if (this.Config.KeepGoldenShells &&
-							item.Price >= this.Config.MinimumShellPrice &&
+							this.AdjustedPrice >= this.Config.MinimumShellPrice &&
 							(item.Name == "Clam" ||
 							item.Name == "Cockle" ||
 							item.Name == "Mussel" ||
