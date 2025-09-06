@@ -55,10 +55,6 @@
 				reset: () => this.Config = new ModConfig(),
 				save: () => this.Helper.WriteConfig(this.Config));
 
-			configMenu.AddParagraph(
-				mod: this.ModManifest,
-				text: () => "Artisan goods and Cooked dishes are not impacted by this mod and will always retain their quality.\n\nOther kinds of items are only influenced when moved into the player inventory, feel free to test and change these options, objects stored in chests will not be impacted until picked back up by the player.");
-
 			configMenu.AddSectionTitle(
 				mod: this.ModManifest,
 				text: () => "Items allowed to retain Gold or Iridium Quality:",
@@ -66,7 +62,7 @@
 
 			configMenu.AddParagraph(
 				mod: this.ModManifest,
-				text: () => "Selected categories will mantain Gold/Iridium quality when picked up.");
+				text: () => "Selected categories will be allowed to mantain Gold/Iridium quality when picked up.");
 
 			configMenu.AddBoolOption(
 				mod: this.ModManifest,
@@ -191,13 +187,22 @@
 			configMenu.AddBoolOption(
 				mod: this.ModManifest,
 				name: () => "Reduce to double regular items",
-				tooltip: () => "Uncheck to keep collecting Iridium quality items",
+				tooltip: () => "Uncheck to keep collecting Iridium quality items, depending on the other settings above",
 				getValue: () => this.Config.ReduceIridiumQuality,
 				setValue: value => this.Config.ReduceIridiumQuality = value);
 
 			configMenu.AddParagraph(
 				mod: this.ModManifest,
-				text: () => "Reducing Iridium quality to regular items will double the quantity of the object obtained.\n\nThis will ease inventory management while letting you keep the same profit when selling the items outright. It also gives you the chance to process double the artisan goods.");
+				text: () => "When enabled this setting will always downgrade Iridium quality items into DOUBLE AMOUNT of regular quality, regardless of any other setting.\n\nThis will ease inventory management while letting you keep the same profit when selling the items.\nIt also gives you the chance to process double the artisan goods.");
+
+			configMenu.AddSectionTitle(
+				mod: this.ModManifest,
+				text: () => "Reminder:",
+				tooltip: null);
+
+			configMenu.AddParagraph(
+				mod: this.ModManifest,
+				text: () => "Artisan goods and Cooked dishes are not impacted by this mod and will always retain their quality.\n\nOther kinds of items are only influenced when moved into the player inventory, feel free to test and change these options, objects stored in chests will not be impacted until picked back up by the player.");
 		}
 
 		/// <summary>Raised AFTER the player receives an item.</summary>
